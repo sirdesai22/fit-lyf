@@ -20,8 +20,6 @@ export default function TabTwoScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-  },
   headerImage: {
     color: '#808080',
     bottom: -90,
@@ -36,7 +34,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    padding: 32,
+    padding: 25,
+    paddingTop: 35,
     gap: 16,
     overflow: 'hidden',
   },
