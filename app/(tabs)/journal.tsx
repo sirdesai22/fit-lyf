@@ -7,6 +7,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { Button } from 'react-native-paper';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import React from 'react';
 
 export default function HomeScreen() {
   return (
@@ -38,31 +39,72 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView style={styles.dataViewer}>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
-        <Text style={{ color: '#fff', fontSize: 56, fontWeight: '600' }}>Food</Text>
+
+        {[1, 2, 3, 4].map(i => (
+          <View key={i} style={{ marginBottom: 15 }}>
+            <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
+              <Text style={{ color: '#fff', fontSize: 16 }}>Prompt: 200g of chicken breast, 100g of broccoli, 100g of rice</Text>
+            </View>
+
+            <View style={[styles.responseBox, { backgroundColor: '#2D3748' }]}>
+              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>FitLyf</Text>
+
+              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
+                <View style={styles.macrosStatsData}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>280</Text>
+                  <Text style={{ color: '#ffffff85' }}>Calories</Text>
+                </View>
+                <View style={styles.macrosStatsData}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>80g</Text>
+                  <Text style={{ color: '#ffffff85' }}>Carbs</Text>
+                </View>
+                <View style={styles.macrosStatsData}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>10g</Text>
+                  <Text style={{ color: '#ffffff85' }}>Protein</Text>
+                </View>
+                <View style={styles.macrosStatsData}>
+                  <Text style={{ color: '#fff', fontWeight: '700' }}>2g</Text>
+                  <Text style={{ color: '#ffffff85' }}>Fat</Text>
+                </View>
+              </View>
+
+              <View style={{borderBottomWidth: 1, borderBottomColor: '#ffffff50', marginBottom: 15}} />
+
+
+              <Text style={{ fontSize: 16, textAlign: 'justify', fontWeight: 400, color: '#CBD5E0' }}>This meal consists of 200ml of milk, which provides about 100 calories, 10g of carbs, 8g of protein, and 5g of fat. The 50g of oats adds approximately 190 calories, 33g of carbs, 7g of protein, and 3g of fat. The 10g of dry fruits mix contributes around 40 calories, 10g of carbs, 1g of protein, and 2g of fat. One tablespoon of honey adds about 64 calories and 17g of carbs. Finally, the two eggs provide around 140 calories, 2g of carbs, 12g of protein, and 10g of fat. When combined, these ingredients create a nutritious meal rich in carbohydrates, protein, and healthy fats.</Text>
+            </View>
+          </View>
+        ))}
+
       </ScrollView>
     </ThemedView>
   );
 }
 const styles = StyleSheet.create({
+  promptBox: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#272727',
+    marginBottom: 8,
+  },
+  responseBox: {
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: '#00000050',
+    marginBottom: 8,
+  },
+  macrosStatsData: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: 2,
+  },
   titleContainer: {
     paddingTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 8,
   },
   content: {
