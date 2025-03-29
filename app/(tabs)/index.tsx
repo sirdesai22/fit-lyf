@@ -7,14 +7,18 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Button } from 'react-native-paper';
+import { useState } from 'react';
 
 export default function TabTwoScreen() {
+  const [data, setData] = useState("Hello");
+
   return (
     <ThemedView style={styles.content}>
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">User Feed</ThemedText>
         <Button style={{ backgroundColor: '#d81f26', borderRadius: 5 }}><Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Logout</Text></Button>
       </ThemedView>
+      <ThemedText type="title">Welcome to FitLyf</ThemedText>
     </ThemedView>
   );
 }

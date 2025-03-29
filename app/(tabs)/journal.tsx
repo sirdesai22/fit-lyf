@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View } from 'react-native';
+import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View, Keyboard } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -8,8 +8,39 @@ import { Button } from 'react-native-paper';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
+import axios from 'axios';
+import { useState } from 'react';
+
+interface ChatMessage {
+  role: 'user' | 'assistant';
+  content: any;
+}
 
 export default function HomeScreen() {
+
+  const [userInput, setUserInput] = useState('');
+  const [chat, setChat] = useState<ChatMessage[]>([]);
+
+  const handleJourneyEntry = () => {
+    if (userInput.trim() !== '') {
+      setChat([...chat, { role: 'user', content: userInput }]);
+      axios.post(
+        'http://192.168.1.5:3000/api/journal/entry', 
+        { journalEntry: userInput })
+        .then(response => {
+          console.debug(response.data[0]);
+          if (response.data) {
+            setChat([...chat, { role: 'assistant', content: response.data[0] }]);
+            setUserInput('');
+            console.log(chat);
+          }
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  };
+
   return (
     <ThemedView style={styles.content}>
       <ThemedView style={styles.titleContainer}>
@@ -17,8 +48,8 @@ export default function HomeScreen() {
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.textInputContainer}>
-        <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter food/exercise..." />
-        <Button style={styles.button} ><IconSymbol size={20} name="paperplane.fill" color={'white'} /></Button>
+        <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter food/exercise..." value={userInput} onChangeText={setUserInput} />
+        <Button style={styles.button} onPress={() => { handleJourneyEntry(); Keyboard.dismiss(); }}><IconSymbol size={20} name="paperplane.fill" color={'white'} /></Button>
       </ThemedView>
 
       <View style={styles.statsContainer}>
@@ -40,40 +71,43 @@ export default function HomeScreen() {
 
       <ScrollView style={styles.dataViewer}>
 
-        {[1, 2, 3, 4].map(i => (
-          <View key={i} style={{ marginBottom: 15 }}>
-            <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
-              <Text style={{ color: '#fff', fontSize: 16 }}>Prompt: 200g of chicken breast, 100g of broccoli, 100g of rice</Text>
-            </View>
+        {chat.map((message, index) => (
+          <View key={index} style={{ marginBottom: 15 }}>
 
-            <View style={[styles.responseBox, { backgroundColor: '#2D3748' }]}>
-              <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>FitLyf</Text>
-
-              <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
-                <View style={styles.macrosStatsData}>
-                  <Text style={{ color: '#fff', fontWeight: '700' }}>280</Text>
-                  <Text style={{ color: '#ffffff85' }}>Calories</Text>
-                </View>
-                <View style={styles.macrosStatsData}>
-                  <Text style={{ color: '#fff', fontWeight: '700' }}>80g</Text>
-                  <Text style={{ color: '#ffffff85' }}>Carbs</Text>
-                </View>
-                <View style={styles.macrosStatsData}>
-                  <Text style={{ color: '#fff', fontWeight: '700' }}>10g</Text>
-                  <Text style={{ color: '#ffffff85' }}>Protein</Text>
-                </View>
-                <View style={styles.macrosStatsData}>
-                  <Text style={{ color: '#fff', fontWeight: '700' }}>2g</Text>
-                  <Text style={{ color: '#ffffff85' }}>Fat</Text>
-                </View>
+            {message.role === 'user' && (
+              <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
+                <Text style={{ color: '#fff', fontSize: 16 }}>Entry: {JSON.stringify(message.content)}</Text>
               </View>
+            )}
 
-              <View style={{borderBottomWidth: 1, borderBottomColor: '#ffffff50', marginBottom: 15}} />
+            {message.role === 'assistant' && (
+              <View style={[styles.responseBox, { backgroundColor: '#2D3748' }]}>
+                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>FitLyf</Text>
 
+                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
+                  <View style={styles.macrosStatsData}>
+                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.calories}</Text>
+                    <Text style={{ color: '#ffffff85' }}>Calories</Text>
+                  </View>
+                  <View style={styles.macrosStatsData}>
+                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.carbs}</Text>
+                    <Text style={{ color: '#ffffff85' }}>Carbs</Text>
+                  </View>
+                  <View style={styles.macrosStatsData}>
+                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.protein}</Text>
+                    <Text style={{ color: '#ffffff85' }}>Protein</Text>
+                  </View>
+                  <View style={styles.macrosStatsData}>
+                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.fat}</Text>
+                    <Text style={{ color: '#ffffff85' }}>Fat</Text>
+                  </View>
+                </View>
 
-              <Text style={{ fontSize: 16, textAlign: 'justify', fontWeight: 400, color: '#CBD5E0' }}>This meal consists of 200ml of milk, which provides about 100 calories, 10g of carbs, 8g of protein, and 5g of fat. The 50g of oats adds approximately 190 calories, 33g of carbs, 7g of protein, and 3g of fat. The 10g of dry fruits mix contributes around 40 calories, 10g of carbs, 1g of protein, and 2g of fat. One tablespoon of honey adds about 64 calories and 17g of carbs. Finally, the two eggs provide around 140 calories, 2g of carbs, 12g of protein, and 10g of fat. When combined, these ingredients create a nutritious meal rich in carbohydrates, protein, and healthy fats.</Text>
-            </View>
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#ffffff50', marginBottom: 15 }} />
+                <Text style={{ fontSize: 16, textAlign: 'justify', fontWeight: 400, color: '#CBD5E0' }}>{message.content.mealInfo}</Text>
+              </View>
+            )}
           </View>
         ))}
 
