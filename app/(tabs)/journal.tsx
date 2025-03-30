@@ -7,32 +7,40 @@ import { ThemedView } from '@/components/ThemedView';
 import { Button } from 'react-native-paper';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import React from 'react';
+import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
-
-interface ChatMessage {
-  role: 'user' | 'assistant';
-  content: any;
-}
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
 
   const [userInput, setUserInput] = useState('');
-  const [chat, setChat] = useState<ChatMessage[]>([]);
+  const [chat, setChat] = useState<any[]>([]);
+  const [totalCalories, setTotalCalories] = useState(0);
+  const [totalCarbs, setTotalCarbs] = useState(0);
+  const [totalProtein, setTotalProtein] = useState(0);
+  const [totalFat, setTotalFat] = useState(0);
 
   const handleJourneyEntry = () => {
     if (userInput.trim() !== '') {
-      setChat([...chat, { role: 'user', content: userInput }]);
+      const newChat = [...chat];
+      newChat.push({ role: 'user', content: userInput });
+      setChat(newChat);
       axios.post(
-        'http://192.168.1.5:3000/api/journal/entry', 
+        `${process.env.EXPO_PUBLIC_API_URL}/api/journal/entry`,
         { journalEntry: userInput })
         .then(response => {
           console.debug(response.data[0]);
           if (response.data) {
-            setChat([...chat, { role: 'assistant', content: response.data[0] }]);
+            setChat([...newChat, { role: 'assistant', content: response.data[0] }]);
             setUserInput('');
-            console.log(chat);
+            setTotalCalories(prev => prev + response.data[0].calories);
+            setTotalCarbs(prev => prev + response.data[0].carbs);
+            setTotalProtein(prev => prev + response.data[0].protein);
+            setTotalFat(prev => prev + response.data[0].fat);
+            saveData('journalEntries', chat);
+            saveData('macros', { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat });
+            checkAndResetData();
           }
         })
         .catch(error => {
@@ -40,6 +48,72 @@ export default function HomeScreen() {
         });
     }
   };
+
+  const handleDelete = async (index: number) => {
+    const newChat = [...chat];
+    const deletedEntry = newChat.splice(index, 2);
+    setChat(newChat);
+    saveData('journalEntries', newChat);
+    const macros = await getData('macros');
+    if (macros) {
+      setTotalCalories(prev => prev - deletedEntry[1].calories);
+      setTotalCarbs(prev => prev - deletedEntry[1].carbs);
+      setTotalProtein(prev => prev - deletedEntry[1].protein);
+      setTotalFat(prev => prev - deletedEntry[1].fat);
+      saveData('macros', { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat });
+    }
+    checkAndResetData();
+  };
+
+  const saveData = async (key: string, value: any) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
+
+  const getData = async (key: string) => {
+    try {
+      const data = await AsyncStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Error retrieving data:', error);
+    }
+  };
+
+  const checkAndResetData = async () => {
+    const today = new Date().toDateString();
+    const lastUpdated = await getData('lastUpdated');
+
+    if (lastUpdated !== today) {
+      await saveData('storedArray', []); // Reset array
+      await saveData('lastUpdated', today); // Update last updated date
+    }
+  };
+
+  useEffect(() => {
+    const loadChat = async () => {
+      const savedChat = await getData('journalEntries');
+      if (savedChat && savedChat.length > 0) {
+        setChat(savedChat);
+        const savedMacros = await getData('macros');
+        if (savedMacros) {
+          setTotalCalories(savedMacros.calories || 0);
+          setTotalCarbs(savedMacros.carbs || 0);
+          setTotalProtein(savedMacros.protein || 0);
+          setTotalFat(savedMacros.fat || 0);
+        }
+      }
+      checkAndResetData();
+    };
+    loadChat();
+  }, []);
+
+  useEffect(() => {
+    checkAndResetData();
+  }, [chat]);
+
 
   return (
     <ThemedView style={styles.content}>
@@ -56,16 +130,16 @@ export default function HomeScreen() {
         <View style={styles.statsBox}>
           <MaterialCommunityIcons name="fire" size={24} color="orange" />
           <Text style={styles.statsTitle}>Calories</Text>
-          <Text style={styles.statsData}>0 Food</Text>
+          <Text style={styles.statsData}>{totalCalories} Food</Text>
           <Text style={styles.statsData}>0 Exercise</Text>
-          <Text style={styles.statsMain}>1500 Remaining</Text>
+          <Text style={styles.statsMain}>{1500 - totalCalories} Remaining</Text>
         </View>
         <View style={styles.statsBox}>
           <MaterialCommunityIcons name="chart-pie" size={24} color="purple" />
           <Text style={styles.statsTitle}>Macros</Text>
-          <Text style={styles.statsData}>0/188 Carbs (g)</Text>
-          <Text style={styles.statsData}>0/94 Protein (g)</Text>
-          <Text style={styles.statsData}>0/42 Fat (g)</Text>
+          <Text style={styles.statsData}>{totalCarbs}/188 Carbs (g)</Text>
+          <Text style={styles.statsData}>{totalProtein}/94 Protein (g)</Text>
+          <Text style={styles.statsData}>{totalFat}/42 Fat (g)</Text>
         </View>
       </View>
 
@@ -78,6 +152,10 @@ export default function HomeScreen() {
               <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
                 <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
                 <Text style={{ color: '#fff', fontSize: 16 }}>Entry: {JSON.stringify(message.content)}</Text>
+                <View style={{ position: 'absolute', right: 10, top: 10, display: 'flex', flexDirection: 'row', gap: 7 }}>
+                  {/* <MaterialCommunityIcons name="pencil" size={15} color="white" /> */}
+                  <MaterialCommunityIcons name="delete" size={15} color="red" onPress={() => { handleDelete(index) }} />
+                </View>
               </View>
             )}
 
