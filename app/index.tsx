@@ -20,5 +20,5 @@ export default function Index() {
 
   if (loading) return null;
 
-  return <Redirect href={session ? "/(tabs)" : "/login"} />;
+  return <Redirect href={session ? "/(tabs)" : "/auth/login"} />;
 }

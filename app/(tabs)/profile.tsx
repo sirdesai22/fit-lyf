@@ -7,8 +7,18 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import MuscleGroupSelector from '@/components/MuscleGroupSelector';
+import { supabase } from '@/lib/initSupabase';
+import { useEffect, useState } from 'react';
 
-export default function TabTwoScreen() {
+export default function ProfileScreen() {
+  const [user, setUser] = useState<any>();
+  useEffect(() => {
+    const getUser = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+    };
+    getUser();
+  }, []);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -21,7 +31,7 @@ export default function TabTwoScreen() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Hello, User</ThemedText>
+        <ThemedText type="title">Hello, {user?.email}</ThemedText>
       </ThemedView>
       <ThemedText>Manage your fitness goals and progress here.</ThemedText>
       <View>
