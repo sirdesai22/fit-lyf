@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform } from 'react-native';
+import { StyleSheet, Image, Platform, View } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -6,6 +6,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import MuscleGroupSelector from '@/components/MuscleGroupSelector';
 
 export default function TabTwoScreen() {
   return (
@@ -23,7 +24,9 @@ export default function TabTwoScreen() {
         <ThemedText type="title">Hello, User</ThemedText>
       </ThemedView>
       <ThemedText>Manage your fitness goals and progress here.</ThemedText>
-      
+      <View>
+      <MuscleGroupSelector />
+      </View>
     </ParallaxScrollView>
   );
 }

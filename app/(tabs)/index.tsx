@@ -1,4 +1,4 @@
-import { StyleSheet, Image, Platform, SafeAreaView, View, SafeAreaViewComponent, ScrollView, Text } from 'react-native';
+import { StyleSheet, Image, Platform, SafeAreaView, View, SafeAreaViewComponent, ScrollView, Text, ImageBackground } from 'react-native';
 
 import { Collapsible } from '@/components/Collapsible';
 import { ExternalLink } from '@/components/ExternalLink';
@@ -9,17 +9,23 @@ import { IconSymbol } from '@/components/ui/IconSymbol';
 import { Button } from 'react-native-paper';
 import { useState } from 'react';
 
-export default function TabTwoScreen() {
+export default function Feed() {
   const [data, setData] = useState("Hello");
 
   return (
-    <ThemedView style={styles.content}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">User Feed</ThemedText>
-        <Button style={{ backgroundColor: '#d81f26', borderRadius: 5 }}><Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Logout</Text></Button>
-      </ThemedView>
-      <ThemedText type="title">Welcome to FitLyf</ThemedText>
+    <ImageBackground
+      source={require('../../assets/images/solo_level_bg.png')} // your image path
+      style={styles.background}
+      resizeMode="cover" // or 'contain', 'stretch'
+    >
+      <ThemedView style={styles.content}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">User Feed</ThemedText>
+          <Button style={{ backgroundColor: '#d81f26', borderRadius: 5 }}><Text style={{ color: '#fff', fontSize: 16, fontWeight: '600' }}>Logout</Text></Button>
+        </ThemedView>
+        <ThemedText type="title">Welcome to FitLyf</ThemedText>
     </ThemedView>
+    </ImageBackground>
   );
 }
 
@@ -29,6 +35,11 @@ const styles = StyleSheet.create({
     bottom: -90,
     left: -35,
     position: 'absolute',
+  },
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   titleContainer: {
     flexDirection: 'row',

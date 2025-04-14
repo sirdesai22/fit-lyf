@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View, Keyboard } from 'react-native';
+import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View, Keyboard, ImageBackground } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -116,81 +116,87 @@ export default function HomeScreen() {
 
 
   return (
-    <ThemedView style={styles.content}>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Journal your progress!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.textInputContainer}>
-        <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter food/exercise..." value={userInput} onChangeText={setUserInput} />
-        <Button style={styles.button} onPress={() => { handleJourneyEntry(); Keyboard.dismiss(); }}><IconSymbol size={20} name="paperplane.fill" color={'white'} /></Button>
-      </ThemedView>
+    <ImageBackground
+      source={require('../../assets/images/solo_level_bg.png')} // your image path
+      style={styles.background}
+      resizeMode="cover" // or 'contain', 'stretch'
+    >
+      <ThemedView style={styles.content}>
+        <ThemedView style={styles.titleContainer}>
+          <ThemedText type="title">Journal your progress!</ThemedText>
+          <HelloWave />
+        </ThemedView>
+        <ThemedView style={styles.textInputContainer}>
+          <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter food/exercise..." value={userInput} onChangeText={setUserInput} />
+          <Button style={styles.button} onPress={() => { handleJourneyEntry(); Keyboard.dismiss(); }}><IconSymbol size={20} name="paperplane.fill" color={'white'} /></Button>
+        </ThemedView>
 
-      <View style={styles.statsContainer}>
-        <View style={styles.statsBox}>
-          <MaterialCommunityIcons name="fire" size={24} color="orange" />
-          <Text style={styles.statsTitle}>Calories</Text>
-          <Text style={styles.statsData}>{totalCalories} Food</Text>
-          <Text style={styles.statsData}>0 Exercise</Text>
-          <Text style={styles.statsMain}>{1500 - totalCalories} Remaining</Text>
-        </View>
-        <View style={styles.statsBox}>
-          <MaterialCommunityIcons name="chart-pie" size={24} color="purple" />
-          <Text style={styles.statsTitle}>Macros</Text>
-          <Text style={styles.statsData}>{totalCarbs}/188 Carbs (g)</Text>
-          <Text style={styles.statsData}>{totalProtein}/94 Protein (g)</Text>
-          <Text style={styles.statsData}>{totalFat}/42 Fat (g)</Text>
-        </View>
-      </View>
-
-      <ScrollView style={styles.dataViewer}>
-
-        {chat.map((message, index) => (
-          <View key={index} style={{ marginBottom: 15 }}>
-
-            {message.role === 'user' && (
-              <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
-                <Text style={{ color: '#fff', fontSize: 16 }}>Entry: {JSON.stringify(message.content)}</Text>
-                <View style={{ position: 'absolute', right: 10, top: 10, display: 'flex', flexDirection: 'row', gap: 7 }}>
-                  {/* <MaterialCommunityIcons name="pencil" size={15} color="white" /> */}
-                  <MaterialCommunityIcons name="delete" size={15} color="red" onPress={() => { handleDelete(index) }} />
-                </View>
-              </View>
-            )}
-
-            {message.role === 'assistant' && (
-              <View style={[styles.responseBox, { backgroundColor: '#2D3748' }]}>
-                <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>FitLyf</Text>
-
-                <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
-                  <View style={styles.macrosStatsData}>
-                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.calories}</Text>
-                    <Text style={{ color: '#ffffff85' }}>Calories</Text>
-                  </View>
-                  <View style={styles.macrosStatsData}>
-                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.carbs}</Text>
-                    <Text style={{ color: '#ffffff85' }}>Carbs</Text>
-                  </View>
-                  <View style={styles.macrosStatsData}>
-                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.protein}</Text>
-                    <Text style={{ color: '#ffffff85' }}>Protein</Text>
-                  </View>
-                  <View style={styles.macrosStatsData}>
-                    <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.fat}</Text>
-                    <Text style={{ color: '#ffffff85' }}>Fat</Text>
-                  </View>
-                </View>
-
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#ffffff50', marginBottom: 15 }} />
-                <Text style={{ fontSize: 16, textAlign: 'justify', fontWeight: 400, color: '#CBD5E0' }}>{message.content.mealInfo}</Text>
-              </View>
-            )}
+        <View style={styles.statsContainer}>
+          <View style={styles.statsBox}>
+            <MaterialCommunityIcons name="fire" size={24} color="orange" />
+            <Text style={styles.statsTitle}>Calories</Text>
+            <Text style={styles.statsData}>{totalCalories} Food</Text>
+            <Text style={styles.statsData}>0 Exercise</Text>
+            <Text style={styles.statsMain}>{1500 - totalCalories} Remaining</Text>
           </View>
-        ))}
+          <View style={styles.statsBox}>
+            <MaterialCommunityIcons name="chart-pie" size={24} color="purple" />
+            <Text style={styles.statsTitle}>Macros</Text>
+            <Text style={styles.statsData}>{totalCarbs}/188 Carbs (g)</Text>
+            <Text style={styles.statsData}>{totalProtein}/94 Protein (g)</Text>
+            <Text style={styles.statsData}>{totalFat}/42 Fat (g)</Text>
+          </View>
+        </View>
 
-      </ScrollView>
-    </ThemedView>
+        <ScrollView style={styles.dataViewer}>
+
+          {chat.map((message, index) => (
+            <View key={index} style={{ marginBottom: 15 }}>
+
+              {message.role === 'user' && (
+                <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
+                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
+                  <Text style={{ color: '#fff', fontSize: 16 }}>Entry: {JSON.stringify(message.content)}</Text>
+                  <View style={{ position: 'absolute', right: 10, top: 10, display: 'flex', flexDirection: 'row', gap: 7 }}>
+                    {/* <MaterialCommunityIcons name="pencil" size={15} color="white" /> */}
+                    <MaterialCommunityIcons name="delete" size={15} color="red" onPress={() => { handleDelete(index) }} />
+                  </View>
+                </View>
+              )}
+
+              {message.role === 'assistant' && (
+                <View style={[styles.responseBox, { backgroundColor: '#2D3748' }]}>
+                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>FitLyf</Text>
+
+                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
+                    <View style={styles.macrosStatsData}>
+                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.calories}</Text>
+                      <Text style={{ color: '#ffffff85' }}>Calories</Text>
+                    </View>
+                    <View style={styles.macrosStatsData}>
+                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.carbs}</Text>
+                      <Text style={{ color: '#ffffff85' }}>Carbs</Text>
+                    </View>
+                    <View style={styles.macrosStatsData}>
+                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.protein}</Text>
+                      <Text style={{ color: '#ffffff85' }}>Protein</Text>
+                    </View>
+                    <View style={styles.macrosStatsData}>
+                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.fat}</Text>
+                      <Text style={{ color: '#ffffff85' }}>Fat</Text>
+                    </View>
+                  </View>
+
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#ffffff50', marginBottom: 15 }} />
+                  <Text style={{ fontSize: 16, textAlign: 'justify', fontWeight: 400, color: '#CBD5E0' }}>{message.content.mealInfo}</Text>
+                </View>
+              )}
+            </View>
+          ))}
+
+        </ScrollView>
+      </ThemedView>
+    </ImageBackground>
   );
 }
 const styles = StyleSheet.create({
@@ -199,6 +205,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: '#272727',
     marginBottom: 8,
+  },
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
   responseBox: {
     padding: 16,
@@ -243,7 +254,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 50,
     borderWidth: 1,
-    borderColor: '#808080',
+    borderColor: '#018bf4',
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
     borderTopLeftRadius: 20,
@@ -261,14 +272,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
   },
   button: {
     width: 50,
     height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#1CAC78',
+    backgroundColor: '#018bf4',
     borderTopRightRadius: 20,
     borderBottomRightRadius: 20,
     borderTopLeftRadius: 0,
@@ -290,7 +301,7 @@ const styles = StyleSheet.create({
 
   // Stats
   statsContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
-  statsBox: { flex: 1, backgroundColor: "#272727", padding: 16, borderRadius: 12, marginRight: 8 },
+  statsBox: { flex: 1, backgroundColor: "#151d30", padding: 16, borderRadius: 12, marginRight: 8, borderColor: '#018bf4', borderWidth: 2, shadowColor: '#fff', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 10, elevation: 15 },
   statsTitle: { fontSize: 16, fontWeight: "bold", marginTop: 4, color: 'white' },
   statsData: { fontSize: 14, color: "#ffffff70" },
   statsMain: { fontSize: 18, fontWeight: "bold", marginTop: 4, color: '#fff' },
