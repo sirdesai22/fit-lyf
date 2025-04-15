@@ -15,12 +15,12 @@ export default function TabLayout() {
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: 'tomato',
+        tabBarActiveTintColor: '#018bf4',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
       })}
     >
-      <Tabs.Screen name="index" options={{ title: 'Home' }} />
+      <Tabs.Screen name="index" options={{ title: 'Feed' }} />
       <Tabs.Screen name="journal" options={{ title: 'Journal' }} />
       <Tabs.Screen name="calorieCalc" options={{ title: 'Calories' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />

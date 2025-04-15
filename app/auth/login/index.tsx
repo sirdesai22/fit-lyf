@@ -1,4 +1,5 @@
 import { supabase } from "@/lib/initSupabase";
+import axios from "axios";
 import { Redirect, useRouter } from "expo-router";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -12,7 +13,9 @@ export default function LoginScreen({ navigation }: any) {
     const handleLogin = async () => {
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
         if (!error) {
-            console.log('Login successful', data);
+            //call backend route to add user data
+            // const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/api/user/add`, { email });
+            // console.log('Login successful', data);
             router.replace('/(tabs)');
         }
         else alert(error.message);

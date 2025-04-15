@@ -17,9 +17,26 @@ export default function HomeScreen() {
   const [userInput, setUserInput] = useState('');
   const [chat, setChat] = useState<any[]>([]);
   const [totalCalories, setTotalCalories] = useState(0);
-  const [totalCarbs, setTotalCarbs] = useState(0);
-  const [totalProtein, setTotalProtein] = useState(0);
-  const [totalFat, setTotalFat] = useState(0);
+  const [totalCarbs, setTotalCarbs] = useState<number>(0);
+  const [totalProtein, setTotalProtein] = useState<number>(0);
+  const [totalFat, setTotalFat] = useState<number>(0);
+
+  const saveData = async (key: string, value: any) => {
+    try {
+      await AsyncStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error('Error saving data:', error);
+    }
+  };
+
+  const getData = async (key: string) => {
+    try {
+      const data = await AsyncStorage.getItem(key);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Error retrieving data:', error);
+    }
+  };
 
   const handleJourneyEntry = () => {
     if (userInput.trim() !== '') {
@@ -50,36 +67,27 @@ export default function HomeScreen() {
   };
 
   const handleDelete = async (index: number) => {
+    console.log(index);
     const newChat = [...chat];
-    const deletedEntry = newChat.splice(index, 2);
+    const deletedEntry = newChat.splice(index, index + 2);
+    
     setChat(newChat);
     saveData('journalEntries', newChat);
     const macros = await getData('macros');
     if (macros) {
-      setTotalCalories(prev => prev - deletedEntry[1].calories);
-      setTotalCarbs(prev => prev - deletedEntry[1].carbs);
-      setTotalProtein(prev => prev - deletedEntry[1].protein);
-      setTotalFat(prev => prev - deletedEntry[1].fat);
+      console.log(deletedEntry);
+      const deletedEntryCalories = Number(deletedEntry[1].content.calories) || 0;
+      const deletedEntryCarbs = Number(deletedEntry[1].content.carbs) || 0;
+      const deletedEntryProtein = Number(deletedEntry[1].content.protein) || 0;
+      const deletedEntryFat = Number(deletedEntry[1].content.fat) || 0;
+
+      setTotalCalories(prev => prev - deletedEntryCalories);
+      setTotalCarbs(prev => prev - deletedEntryCarbs);
+      setTotalProtein(prev => prev - deletedEntryProtein);
+      setTotalFat(prev => prev - deletedEntryFat);
       saveData('macros', { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat });
     }
     checkAndResetData();
-  };
-
-  const saveData = async (key: string, value: any) => {
-    try {
-      await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
-  };
-
-  const getData = async (key: string) => {
-    try {
-      const data = await AsyncStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('Error retrieving data:', error);
-    }
   };
 
   const checkAndResetData = async () => {
@@ -135,16 +143,16 @@ export default function HomeScreen() {
           <View style={styles.statsBox}>
             <MaterialCommunityIcons name="fire" size={24} color="orange" />
             <Text style={styles.statsTitle}>Calories</Text>
-            <Text style={styles.statsData}>{totalCalories} Food</Text>
+            <Text style={styles.statsData}>{Math.floor(totalCalories)} Food</Text>
             <Text style={styles.statsData}>0 Exercise</Text>
-            <Text style={styles.statsMain}>{1500 - totalCalories} Remaining</Text>
+            <Text style={styles.statsMain}>{1500 - Math.floor(totalCalories)} Remaining</Text>
           </View>
           <View style={styles.statsBox}>
             <MaterialCommunityIcons name="chart-pie" size={24} color="purple" />
             <Text style={styles.statsTitle}>Macros</Text>
-            <Text style={styles.statsData}>{totalCarbs}/188 Carbs (g)</Text>
-            <Text style={styles.statsData}>{totalProtein}/94 Protein (g)</Text>
-            <Text style={styles.statsData}>{totalFat}/42 Fat (g)</Text>
+            <Text style={styles.statsData}>{Math.floor(totalCarbs)}/188 Carbs (g)</Text>
+            <Text style={styles.statsData}>{Math.floor(totalProtein)}/94 Protein (g)</Text>
+            <Text style={styles.statsData}>{Math.floor(totalFat)}/42 Fat (g)</Text>
           </View>
         </View>
 
