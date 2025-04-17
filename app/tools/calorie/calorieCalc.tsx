@@ -50,11 +50,11 @@ export default function TabTwoScreen() {
           source={require('@/assets/images/calories.jpg')}
           style={styles.caloriesImage}
         />
-        }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Calorie Calculator</ThemedText>
-      </ThemedView>
-      <ThemedText>Calculate your daily calorie needs.</ThemedText>
+      }>
+      <View style={styles.titleContainer}>
+        <Text style={{ fontSize: 35, fontWeight: 700, color: '#fff' }}>Calorie Calculator</Text>
+      </View>
+      <Text style={{ fontSize: 17, fontWeight: 400, color: '#fff' }}>Calculate your daily calorie needs.</Text>
 
       <TextInput keyboardType="numeric" value={age} onChangeText={(text) => setAge(text)} style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter your age" />
 
@@ -111,31 +111,31 @@ export default function TabTwoScreen() {
       {
         calories > 0 && (
           <View style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ fontSize: 25, color: '#fff', marginBottom: 10 }}>Here's your TDEE</Text>
+            <Text style={{ fontSize: 25, fontWeight: 400, color: '#fff', marginBottom: 10 }}>Here's your TDEE</Text>
 
-            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#f14738', padding: 5 }}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Extreme weight loss:</Text>
-              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{calories.toFixed(0)} Calories</Text>
+            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#018bf450', padding: 5 }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Extreme Loss:</Text>
+              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{(Number(calories) - 700).toFixed(0)} Calories</Text>
             </View>
 
-            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#f99c35', padding: 5 }}>
+            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#018bf475', padding: 5 }}>
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Weight loss:</Text>
-              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{calories.toFixed(0)} Calories</Text>
+              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{(Number(calories) - 300).toFixed(0)} Calories</Text>
             </View>
 
-            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#fed233', padding: 5 }}>
+            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#018bf4', padding: 5 }}>
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Maintain weight:</Text>
               <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{calories.toFixed(0)} Calories</Text>
             </View>
 
-            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#5abb6a', padding: 5 }}>
+            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#018bf475', padding: 5 }}>
               <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Weight gain:</Text>
-              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{calories.toFixed(0)} Calories</Text>
+              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{(Number(calories) + 300).toFixed(0)} Calories</Text>
             </View>
 
-            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#10a2dd', padding: 5 }}>
-              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Extreme weight gain:</Text>
-              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{calories.toFixed(0)} Calories</Text>
+            <View style={{ width: '100%', display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#018bf450', padding: 5 }}>
+              <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Extreme Gain:</Text>
+              <Text style={{ fontSize: 25, fontWeight: 'bold', color: '#fff' }}>{(Number(calories) + 700).toFixed(0)} Calories</Text>
             </View>
           </View>
         )

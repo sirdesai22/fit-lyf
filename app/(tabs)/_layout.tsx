@@ -8,9 +8,9 @@ export default function TabLayout() {
         tabBarIcon: ({ color, size }) => {
           let iconName: any;
 
-          if (route.name === 'index') iconName = 'home';
-          else if (route.name === 'journal') iconName = 'book';
-          else if (route.name === 'calorieCalc') iconName = 'fitness';
+          if (route.name === 'index') iconName = 'book';
+          else if (route.name === 'mysquad') iconName = 'barbell';
+          else if (route.name === 'habitTracker') iconName = 'apps';
           else if (route.name === 'profile') iconName = 'person';
 
           return <Ionicons name={iconName} size={size} color={color} />;
@@ -20,9 +20,9 @@ export default function TabLayout() {
         headerShown: false,
       })}
     >
-      <Tabs.Screen name="index" options={{ title: 'Feed' }} />
-      <Tabs.Screen name="journal" options={{ title: 'Journal' }} />
-      <Tabs.Screen name="calorieCalc" options={{ title: 'Calories' }} />
+      <Tabs.Screen name="index" options={{ title: 'Journal' }} />
+      <Tabs.Screen name="mysquad" options={{ title: 'My Squad' }} />
+      <Tabs.Screen name="habitTracker" options={{ title: 'Habit Tracker' }} />
       <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>
   );
