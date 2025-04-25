@@ -4,124 +4,75 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { Button } from 'react-native-paper';
+import { Button, Checkbox } from 'react-native-paper';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+type Task = {
+  id: string;
+  title: string;
+  completed: boolean;
+  createdAt: Date;
+  // updatedAt?: Date;         // Optional: Last update timestamp
+  // priority?: 'low' | 'medium' | 'high';  // Optional priority
+  // notes?: string;           // Optional notes
+};
+
 export default function HomeScreen() {
 
   const [userInput, setUserInput] = useState('');
-  const [chat, setChat] = useState<any[]>([]);
-  const [totalCalories, setTotalCalories] = useState(0);
-  const [totalCarbs, setTotalCarbs] = useState<number>(0);
-  const [totalProtein, setTotalProtein] = useState<number>(0);
-  const [totalFat, setTotalFat] = useState<number>(0);
+  const [showIncomplete, setShowInComplete] = useState(true);
+  const [showCompleted, setShowCompleted] = useState(false);
+  const [tasks, setTasks] = useState([]);
 
-  const saveData = async (key: string, value: any) => {
+  const handleNewTask = async () => {
+    if (!userInput) return;
+    const newTask = { id: Date.now(), title: userInput, completed: false, createdAt: Date.now() };
+    const updatedTasks = [...tasks, newTask];
+    // console.log(newTask)
+
     try {
-      await AsyncStorage.setItem(key, JSON.stringify(value));
-    } catch (error) {
-      console.error('Error saving data:', error);
-    }
-  };
-
-  const getData = async (key: string) => {
-    try {
-      const data = await AsyncStorage.getItem(key);
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('Error retrieving data:', error);
-    }
-  };
-
-  const handleJourneyEntry = () => {
-    if (userInput.trim() !== '') {
-      const newChat = [...chat];
-      newChat.push({ role: 'user', content: userInput });
-      setChat(newChat);
-      axios.post(
-        `${process.env.EXPO_PUBLIC_API_URL}/api/journal/entry`,
-        { journalEntry: userInput })
-        .then(response => {
-          console.debug(response.data[0]);
-          if (response.data) {
-            setChat([...newChat, { role: 'assistant', content: response.data[0] }]);
-            setUserInput('');
-            setTotalCalories(prev => prev + response.data[0].calories);
-            setTotalCarbs(prev => prev + response.data[0].carbs);
-            setTotalProtein(prev => prev + response.data[0].protein);
-            setTotalFat(prev => prev + response.data[0].fat);
-            saveData('journalEntries', chat);
-            saveData('macros', { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat });
-            checkAndResetData();
-          }
-        })
-        .catch(error => {
-          console.log(error);
-        });
-    }
-  };
-
-  const handleDelete = async (index: number) => {
-    console.log(index);
-    const newChat = [...chat];
-    const deletedEntry = newChat.splice(index, index + 2);
-    
-    setChat(newChat);
-    saveData('journalEntries', newChat);
-    const macros = await getData('macros');
-    if (macros) {
-      console.log(deletedEntry);
-      const deletedEntryCalories = Number(deletedEntry[1].content.calories) || 0;
-      const deletedEntryCarbs = Number(deletedEntry[1].content.carbs) || 0;
-      const deletedEntryProtein = Number(deletedEntry[1].content.protein) || 0;
-      const deletedEntryFat = Number(deletedEntry[1].content.fat) || 0;
-
-      setTotalCalories(prev => prev - deletedEntryCalories);
-      setTotalCarbs(prev => prev - deletedEntryCarbs);
-      setTotalProtein(prev => prev - deletedEntryProtein);
-      setTotalFat(prev => prev - deletedEntryFat);
-      saveData('macros', { calories: totalCalories, carbs: totalCarbs, protein: totalProtein, fat: totalFat });
-    }
-    checkAndResetData();
-  };
-
-  const checkAndResetData = async () => {
-    const today = new Date().toDateString();
-    const lastUpdated = await getData('lastUpdated');
-
-    if (lastUpdated !== today) {
-      await saveData('storedArray', []); // Reset array
-      await saveData('lastUpdated', today); // Update last updated date
+      await AsyncStorage.setItem('TASKS', JSON.stringify(updatedTasks));
+      setTasks(updatedTasks);
+      setUserInput('');
+    } catch (e) {
+      console.error('Error saving task:', e);
     }
   };
 
   useEffect(() => {
-    const loadChat = async () => {
-      const savedChat = await getData('journalEntries');
-      if (savedChat && savedChat.length > 0) {
-        setChat(savedChat);
-        const savedMacros = await getData('macros');
-        if (savedMacros) {
-          setTotalCalories(savedMacros.calories || 0);
-          setTotalCarbs(savedMacros.carbs || 0);
-          setTotalProtein(savedMacros.protein || 0);
-          setTotalFat(savedMacros.fat || 0);
-        }
+    const loadTasks = async () => {
+      try {
+        const data = await AsyncStorage.getItem('TASKS');
+        if (data) setTasks(JSON.parse(data));
+      } catch (e) {
+        console.error('Error loading tasks:', e);
       }
-      checkAndResetData();
     };
-    loadChat();
+
+    loadTasks();
   }, []);
 
-  useEffect(() => {
-    checkAndResetData();
-  }, [chat]);
+  const incompleteTasks = tasks?.filter((task:Task) => !task.completed);
+  const completedTasks = tasks?.filter((task:Task) => task.completed);
 
+
+  const toggleTask = async (taskId: string) => {
+    const updatedTasks = tasks?.map((task:Task) =>
+      task.id === taskId ? { ...task, completed: !task.completed } : task
+    );
+
+    try {
+      await AsyncStorage.setItem('TASKS', JSON.stringify(updatedTasks));
+      setTasks(updatedTasks);
+    } catch (e) {
+      console.error('Error updating task:', e);
+    }
+  };
 
   return (
     <ImageBackground
@@ -130,84 +81,90 @@ export default function HomeScreen() {
       resizeMode="cover" // or 'contain', 'stretch'
     >
       <ThemedView style={styles.content}>
-        <ThemedView style={styles.titleContainer}>
-          <ThemedText type="title">Journal your progress!</ThemedText>
-          <HelloWave />
-        </ThemedView>
-        <ThemedView style={styles.textInputContainer}>
-          <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter food/exercise..." value={userInput} onChangeText={setUserInput} />
-          <Button style={styles.button} onPress={() => { handleJourneyEntry(); Keyboard.dismiss(); }}><IconSymbol size={20} name="paperplane.fill" color={'white'} /></Button>
-        </ThemedView>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statsBox}>
-            <MaterialCommunityIcons name="fire" size={24} color="orange" />
-            <Text style={styles.statsTitle}>Calories</Text>
-            <Text style={styles.statsData}>{Math.floor(totalCalories)} Food</Text>
-            <Text style={styles.statsData}>0 Exercise</Text>
-            <Text style={styles.statsMain}>{1500 - Math.floor(totalCalories)} Remaining</Text>
-          </View>
-          <View style={styles.statsBox}>
-            <MaterialCommunityIcons name="chart-pie" size={24} color="purple" />
-            <Text style={styles.statsTitle}>Macros</Text>
-            <Text style={styles.statsData}>{Math.floor(totalCarbs)}/188 Carbs (g)</Text>
-            <Text style={styles.statsData}>{Math.floor(totalProtein)}/94 Protein (g)</Text>
-            <Text style={styles.statsData}>{Math.floor(totalFat)}/42 Fat (g)</Text>
-          </View>
+        <View style={styles.titleContainer}>
+          <ThemedText type="title">Your Tasks!</ThemedText>
+        </View>
+        <View style={styles.textInputContainer}>
+          <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter new task..." value={userInput} onChangeText={setUserInput} />
+          <Button style={styles.button} onPress={() => { handleNewTask(); Keyboard.dismiss(); }}><AntDesign name="plus" size={24} color="white" /></Button>
         </View>
 
-        <ScrollView style={styles.dataViewer}>
 
-          {chat.map((message, index) => (
-            <View key={index} style={{ marginBottom: 15 }}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingBottom: 20 }}
+          keyboardShouldPersistTaps="handled"
+          keyboardDismissMode="on-drag"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Incomplete Section */}
+          <View style={styles.categoryViewBox}>
+            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Incomplete Tasks</Text>
+            <Button onPress={() => setShowInComplete(!showIncomplete)}>
+              <AntDesign name={showIncomplete ? "up" : "down"} size={24} color="white" />
+            </Button>
+          </View>
 
-              {message.role === 'user' && (
-                <View style={[styles.promptBox, { backgroundColor: '#1A202C' }]}>
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>You</Text>
-                  <Text style={{ color: '#fff', fontSize: 16 }}>Entry: {JSON.stringify(message.content)}</Text>
-                  <View style={{ position: 'absolute', right: 10, top: 10, display: 'flex', flexDirection: 'row', gap: 7 }}>
-                    {/* <MaterialCommunityIcons name="pencil" size={15} color="white" /> */}
-                    <MaterialCommunityIcons name="delete" size={15} color="red" onPress={() => { handleDelete(index) }} />
-                  </View>
+          {showIncomplete && (
+            <View>
+              {incompleteTasks?.map((task:Task, index) => (
+                <View key={index} style={styles.taskCard}>
+                  <Checkbox onPress={() => toggleTask(task.id)} status="unchecked" color="#018bf4" />
+                  <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
                 </View>
-              )}
-
-              {message.role === 'assistant' && (
-                <View style={[styles.responseBox, { backgroundColor: '#2D3748' }]}>
-                  <Text style={{ color: '#fff', fontSize: 16, fontWeight: '800', marginBottom: 10 }}>FitLyf</Text>
-
-                  <View style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 15 }}>
-                    <View style={styles.macrosStatsData}>
-                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.calories}</Text>
-                      <Text style={{ color: '#ffffff85' }}>Calories</Text>
-                    </View>
-                    <View style={styles.macrosStatsData}>
-                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.carbs}</Text>
-                      <Text style={{ color: '#ffffff85' }}>Carbs</Text>
-                    </View>
-                    <View style={styles.macrosStatsData}>
-                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.protein}</Text>
-                      <Text style={{ color: '#ffffff85' }}>Protein</Text>
-                    </View>
-                    <View style={styles.macrosStatsData}>
-                      <Text style={{ color: '#fff', fontWeight: '700' }}>{message.content.fat}</Text>
-                      <Text style={{ color: '#ffffff85' }}>Fat</Text>
-                    </View>
-                  </View>
-
-                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#ffffff50', marginBottom: 15 }} />
-                  <Text style={{ fontSize: 16, textAlign: 'justify', fontWeight: 400, color: '#CBD5E0' }}>{message.content.mealInfo}</Text>
-                </View>
-              )}
+              ))}
             </View>
-          ))}
+          )}
 
+          {/* Completed Section */}
+          <View style={styles.categoryViewBox}>
+            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Completed Tasks</Text>
+            <Button onPress={() => setShowCompleted(!showCompleted)}>
+              <AntDesign name={showCompleted ? "up" : "down"} size={24} color="white" />
+            </Button>
+          </View>
+
+          {showCompleted && (
+            <View>
+              {completedTasks?.map((task:Task, index) => (
+                <View key={index} style={styles.taskCard}>
+                  <Checkbox onPress={() => toggleTask(task.id)} status="checked" color="#018bf4" />
+                  <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
+                </View>
+              ))}
+            </View>
+          )}
         </ScrollView>
+
       </ThemedView>
     </ImageBackground>
   );
 }
 const styles = StyleSheet.create({
+  categoryViewBox: {
+    backgroundColor: '#272727',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 10,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginVertical: 5
+  },
+  taskCard: {
+    display: 'flex',
+    flexDirection: 'row',
+    // justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#0008',
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+    borderRadius: 10,
+    marginVertical: 3,
+    borderWidth: 1,
+    borderColor: '#018bf4',
+  },
   promptBox: {
     padding: 16,
     borderRadius: 12,
@@ -265,8 +222,8 @@ const styles = StyleSheet.create({
     borderColor: '#018bf4',
     borderTopRightRadius: 0,
     borderBottomRightRadius: 0,
-    borderTopLeftRadius: 20,
-    borderBottomLeftRadius: 20,
+    borderTopLeftRadius: 10,
+    borderBottomLeftRadius: 10,
     paddingHorizontal: 12,
     color: '#fff',
     position: 'relative',
@@ -280,7 +237,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   button: {
     width: 50,
@@ -288,8 +245,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#018bf4',
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
     borderTopLeftRadius: 0,
     borderBottomLeftRadius: 0,
   },
