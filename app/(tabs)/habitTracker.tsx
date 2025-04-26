@@ -2,86 +2,69 @@
 import React from 'react';
 import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
 import HabitCard from '../../components/HabitCard';
-import { FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
 import { ThemedView } from '@/components/ThemedView';
 import HeatMap from '@ncuhomeclub/react-native-heatmap';
 import type { ColorProps } from '@ncuhomeclub/react-native-heatmap';
+import { Button } from 'react-native-paper';
 
-const color: ColorProps = {
-    theme: '#FF6B6B',
-    opacitys: [
-        {
-            opacity: 0.2,
-            limit: 5,
-        },
-        {
-            opacity: 0.4,
-            limit: 10,
-        },
-        {
-            opacity: 0.6,
-            limit: 15,
-        },
-        {
-            opacity: 0.8,
-            limit: 20,
-        },
-        {
-            opacity: 1,
-            limit: 25,
-        },
-    ],
-}
+const opacitys = [
+    {
+        opacity: 0.2,
+        limit: 5,
+    },
+    {
+        opacity: 0.4,
+        limit: 10,
+    },
+    {
+        opacity: 0.6,
+        limit: 15,
+    },
+    {
+        opacity: 0.8,
+        limit: 20,
+    },
+    {
+        opacity: 1,
+        limit: 25,
+    },
+]
 
 export default function App() {
-    const data = [
-        12, 423, 42, 12, 0, 0, 0, 23, 0, 0, 0, 0, 0, 34, 35, 34, 23, 23, 35, 34, 10,
-        2, 4, 6, 2, 5, 0, 0,
-    ];
+    const habitData = Array.from({ length: 250 }, () => Math.floor(Math.random() * 100));
     return (
-        <ImageBackground
-            source={require('../../assets/images/solo_level_bg.png')} // your image path
-            style={styles.background}
-            resizeMode="cover" // or 'contain', 'stretch'
-        >
-            <ThemedView style={{ height: '100%', padding: 20 }}>
-                <View style={{ width: '100%', height: 50, marginTop: 20 }}>
-                    <Text style={{ textAlign: 'center', color: '#fff', fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>FitLyf</Text>
+        <View>
+            <View style={styles.navbar}>
+                <Text style={styles.branding}>Habit Tracker</Text>
+            </View>
+
+            <ScrollView style={{ padding: 20, }}>
+                <View style={[styles.habitContainer]}>
+                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 7 }}>
+                        <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500', }}>Book Reading</Text>
+                        <AntDesign name="checkcircle" size={24} color="#FF6B6B" />
+                    </View>
+                    <HeatMap data={habitData} color={{ theme: '#FF6B6B', opacitys: opacitys }} shape='circle' />
                 </View>
 
-                <ScrollView style={{ padding: 10 }}>
-                    <View style={{ backgroundColor: '#000', padding: 5, borderRadius: 10, borderColor: '#FF6B6B', borderWidth: 2 }}>
-                        <HeatMap data={data} color={color} xNumber={52} yNumber={7} shape='circle' />
+                <View style={[styles.habitContainer]}>
+                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 7 }}>
+                        <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500', }}>Journaling</Text>
+                        <AntDesign name="checkcircle" size={24} color="#F8F8FF" />
                     </View>
+                    <HeatMap data={habitData} color={{ theme: '#F8F8FF', opacitys: opacitys }} shape='circle' />
+                </View>
 
-                    {/* <HabitCard
-                        title="Cardio"
-                        icon={<FontAwesome5 name="walking" size={18} color="#FF6B6B" />}
-                        color="#FF6B6B"
-                        progress={35}
-                    />
-                    <HabitCard
-                        title="Workout 💪"
-                        icon={<FontAwesome5 name="dumbbell" size={18} color="#4DB6FF" />}
-                        color="#4DB6FF"
-                        progress={20}
-                    />
-                    <HabitCard
-                        title="Book Reading 📖"
-                        icon={<MaterialCommunityIcons name="book-open-page-variant" size={18} color="#FFA500" />}
-                        color="#FFA500"
-                        progress={30}
-                    />
-                    <HabitCard
-                        title="DSA 🎯"
-                        icon={<MaterialCommunityIcons name="code-tags" size={18} color="#4CAF50" />}
-                        color="#4CAF50"
-                        progress={25}
-                    /> */}
-
-                </ScrollView>
-            </ThemedView>
-        </ImageBackground>
+                <View style={[styles.habitContainer]}>
+                    <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 7 }}>
+                        <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500', }}>Gym/Workout</Text>
+                        <AntDesign name="checkcircle" size={24} color="#e6fe4e" />
+                    </View>
+                    <HeatMap data={habitData} color={{ theme: '#e6fe4e', opacitys: opacitys }} shape='circle' />
+                </View>
+            </ScrollView>
+        </View>
     );
 }
 
@@ -90,5 +73,37 @@ const styles = StyleSheet.create({
         flex: 1,
         width: '100%',
         height: '100%',
+    },
+    habitContainer: {
+        backgroundColor: '#121212',
+        borderRadius: 25,
+        borderColor: '#fff',
+        borderWidth: 2,
+        padding: 15,
+        paddingTop: 5,
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        //height: 200,
+        //borderColor: '#d9fe7d', 
+        //backgroundColor: '#d9fe7d50',
+        marginTop: 15,
+    },
+    navbar: {
+        backgroundColor: '#121212',
+        padding: 16,
+        borderBottomWidth: 2,
+        borderBottomColor: '#fff',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    branding: {
+        color: '#fff',
+        fontSize: 25,
+        fontWeight: '700',
     },
 });

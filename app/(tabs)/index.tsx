@@ -5,6 +5,7 @@ import { ProgressBar } from 'react-native-paper'; // or any other progress bar l
 import LinearGradient from 'react-native-linear-gradient';
 import { ContributionGraph, LineChart, ProgressChart } from 'react-native-chart-kit';
 import HeatMap, { ColorProps } from '@ncuhomeclub/react-native-heatmap';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 const UserProfile = () => {
   const user = {
@@ -66,120 +67,123 @@ const UserProfile = () => {
   }
 
   return (
-    <View style={styles.maincontainer}>
-
-      <View style={styles.header}>
-        <Image source={{ uri: user.avatar }} style={styles.avatar} />
-        <View style={{ justifyContent: 'center' }}>
-          <Text style={styles.name}>{user.name}</Text>
-          <Text style={styles.username}>{user.username}</Text>
-        </View>
-      </View>
-
-      <ScrollView style={styles.container}>
-        {/* <LinearGradient
-          colors={['#0C0C0C', '#151D30']} // Your desired gradient colors
-          style={styles.linearGradientBackground}
-        > */}
-
-        {/* Stats Row */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{user.stats.habits}</Text>
-            <Text style={styles.statLabel}>Habits</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{user.stats.streak}🔥</Text>
-            <Text style={styles.statLabel}>Streak</Text>
-          </View>
-          <View style={styles.statBox}>
-            <Text style={styles.statValue}>{user.stats.points}</Text>
-            <Text style={styles.statLabel}>XP Points</Text>
+    <ParallaxScrollView
+      headerImage={
+        <View style={styles.header}>
+          <Image source={{ uri: user.avatar }} style={styles.avatar} />
+          <View style={{ justifyContent: 'center' }}>
+            <Text style={styles.name}>{user.name}</Text>
+            <Text style={styles.username}>{user.username}</Text>
           </View>
         </View>
+      }
+      headerBackgroundColor={{ dark: '#F8F8FF', light: '#F8F8FF' }}
+    >
 
-        {/* Gamified Stats */}
-        <View style={styles.gamifyContainer}>
-          <Text style={styles.levelText}>Level {user.stats.level} ⚔️</Text>
-          <ProgressBar progress={user.stats.xpProgress} color="#0183ff" style={styles.progressBar} />
-          <Text style={styles.rank}>Rank: {user.stats.rank}</Text>
-        </View>
+      <View style={styles.maincontainer}>
+        
+        <ScrollView style={styles.container}>
+          {/* Stats Row */}
+          <View style={styles.statsContainer}>
+            <View style={styles.statBox}>
+              <Text style={styles.statValue}>{user.stats.habits}</Text>
+              <Text style={styles.statLabel}>Habits</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statValue}>{user.stats.streak}🔥</Text>
+              <Text style={styles.statLabel}>Streak</Text>
+            </View>
+            <View style={styles.statBox}>
+              <Text style={styles.statValue}>{user.stats.points}</Text>
+              <Text style={styles.statLabel}>XP Points</Text>
+            </View>
+          </View>
 
-        <View style={styles.analyticsContainer}>
-          {/* <LinearGradient colors={['#0C0C0C', '#151D30']}> */}
-          <View style={[styles.analyticsBox, { borderColor: '#22c55e00', backgroundColor: '#22c55e99' }]}>
-            <Text style={styles.analyticsTitle}>Progress</Text>
-            <ProgressChart
-              data={progressData}
-              width={185}
-              height={140}
-              strokeWidth={10}
-              radius={32}
-              chartConfig={chartConfig}
-              hideLegend={true}
-              style={{ padding: 0 }}
-            />
+          <Text style={styles.aiSuggestionsTitle}>"Get more sleep, 5 more hours "</Text>
+
+          {/* Gamified Stats */}
+          <View style={styles.gamifyContainer}>
+            <Text style={styles.levelText}>Level {user.stats.level} ⚔️</Text>
+            <ProgressBar progress={user.stats.xpProgress} color="#0183ff" style={styles.progressBar} />
+            <Text style={styles.rank}>Rank: {user.stats.rank}</Text>
+          </View>
+
+          <View style={styles.analyticsContainer}>
+            {/* <LinearGradient colors={['#0C0C0C', '#151D30']}> */}
+            <View style={[styles.analyticsBox, { borderColor: '#22c55e00', backgroundColor: '#22c55e99' }]}>
+              <Text style={styles.analyticsTitle}>Progress</Text>
+              <ProgressChart
+                data={progressData}
+                width={185}
+                height={140}
+                strokeWidth={10}
+                radius={32}
+                chartConfig={chartConfig}
+                hideLegend={true}
+                style={{ padding: 0 }}
+              />
+            </View>
+            {/* </LinearGradient> */}
+
+            <View style={[styles.analyticsBox, { borderColor: '#0183ff00', backgroundColor: '#0183ff99' }]}>
+              <Text style={styles.analyticsTitle}>Mood</Text>
+              <Octicons name="smiley" size={130} color="white" />
+            </View>
           </View>
           {/* </LinearGradient> */}
 
-          <View style={[styles.analyticsBox, { borderColor: '#0183ff00', backgroundColor: '#0183ff99' }]}>
-            <Text style={styles.analyticsTitle}>Mood</Text>
-            <Octicons name="smiley" size={130} color="white" />
+          <View style={[styles.graphContainer]}>
+            <HeatMap data={contributionData} color={heatMapColor} shape='circle' />
           </View>
-        </View>
-        {/* </LinearGradient> */}
 
-        <View style={[styles.graphContainer]}>
-          <HeatMap data={contributionData} color={heatMapColor} shape='circle' />
-        </View>
-
-        <View style={styles.lineChartContainer}>
-          <LineChart
-            data={{
-              // labels: ["January", "February", "March", "April", "May", "June"],
-              labels: [],
-              datasets: [
-                {
-                  data: [
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                    Math.random() * 100,
-                  ]
+          <View style={styles.lineChartContainer}>
+            <LineChart
+              data={{
+                // labels: ["January", "February", "March", "April", "May", "June"],
+                labels: [],
+                datasets: [
+                  {
+                    data: [
+                      Math.random() * 100,
+                      Math.random() * 100,
+                      Math.random() * 100,
+                      Math.random() * 100,
+                    ]
+                  }
+                ]
+              }}
+              withVerticalLabels={false}
+              withHorizontalLabels={false}
+              width={370} // from react-native
+              height={185}
+              yAxisLabel="$"
+              yAxisSuffix="k"
+              formatYLabel={(value) => `${value}k`}
+              chartConfig={{
+                backgroundColor: "#e26a00",
+                backgroundGradientFrom: "#fb8c00",
+                backgroundGradientTo: "#ffa726",
+                decimalPlaces: 2, // optional, defaults to 2dp
+                color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+                style: {
+                  borderRadius: 16,
+                },
+                propsForDots: {
+                  r: "6",
+                  strokeWidth: "2",
+                  stroke: "#ffa726"
                 }
-              ]
-            }}
-            withVerticalLabels={false}
-            withHorizontalLabels={false}
-            width={370} // from react-native
-            height={185}
-            yAxisLabel="$"
-            yAxisSuffix="k"
-            formatYLabel={(value) => `${value}k`}
-            chartConfig={{
-              backgroundColor: "#e26a00",
-              backgroundGradientFrom: "#fb8c00",
-              backgroundGradientTo: "#ffa726",
-              decimalPlaces: 2, // optional, defaults to 2dp
-              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
-              style: {
+              }}
+              bezier
+              style={{
                 borderRadius: 16,
-              },
-              propsForDots: {
-                r: "6",
-                strokeWidth: "2",
-                stroke: "#ffa726"
-              }
-            }}
-            bezier
-            style={{
-              borderRadius: 16,
-            }}
-          />
-        </View>
-      </ScrollView>
-    </View >
+              }}
+            />
+          </View>
+        </ScrollView>
+      </View >
+    </ParallaxScrollView>
   );
 };
 
@@ -192,8 +196,6 @@ const styles = StyleSheet.create({
   linearGradientBackground: {
     flex: 1, // Make it take up the entire container
     padding: 20,
-    borderTopRightRadius: 20,
-    borderTopLeftRadius: 20,
   },
   maincontainer: {
     flex: 1,
@@ -204,8 +206,8 @@ const styles = StyleSheet.create({
     //backgroundColor: 'transparent',
     //backgroundImage: 'linear-gradient(to bottom, #0C0C0C, #151D30)', //oil black to dark blue
     flex: 1,
-    borderTopColor: '#0C0C0C',
-    borderTopWidth: 1,
+    //borderTopColor: '#0C0C0C',
+    //borderTopWidth: 1,
     overflowY: 'hidden',
     padding: 20,
     borderTopRightRadius: 20,
@@ -213,8 +215,19 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    flexDirection: 'row',
-    gap: 15,
+    flexDirection: 'column',
+    backgroundColor: '#F8F8FF', //ghost white
+    gap: 5,
+    //borderBottomRightRadius: 20,
+    //borderBottomLeftRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 10,
     //marginBottom: 25,
     //backgroundColor: '#018bf4',
     padding: 20,
@@ -224,21 +237,22 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 50,
-    marginBottom: 10,
   },
   name: {
     color: '#0B1215',
-    fontSize: 32,
+    fontSize: 52,
     fontWeight: 900,
+    textAlign: 'center',
   },
   username: {
     color: '#0B1215',
     fontWeight: 600,
     fontSize: 15,
+    textAlign: 'center',
   },
   gamifyContainer: {
     //backgroundColor: '#0B1215',//obsidian
-    backgroundColor: '#F8F8FF',
+    backgroundColor: '#e6fe4e',
     borderRadius: 25,
     padding: 15,
     marginBottom: 20,
@@ -256,9 +270,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#0B1215',
   },
   rank: {
-    color: '#FFD700',
+    color: '#000',
     marginTop: 8,
     fontWeight: '600',
+  },
+  aiSuggestionsTitle: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '300',
+    fontStyle: 'italic',
+    marginBottom: 8,
+    textAlign: 'center',
   },
   analyticsContainer: {
     flexDirection: 'row',
