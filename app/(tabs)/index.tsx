@@ -1,286 +1,347 @@
-import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View, Keyboard, ImageBackground } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground, Dimensions, ScrollView } from 'react-native';
+import { MaterialIcons, Feather, Octicons } from '@expo/vector-icons';
+import { ProgressBar } from 'react-native-paper'; // or any other progress bar lib
+import LinearGradient from 'react-native-linear-gradient';
+import { ContributionGraph, LineChart, ProgressChart } from 'react-native-chart-kit';
+import HeatMap, { ColorProps } from '@ncuhomeclub/react-native-heatmap';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Button, Checkbox } from 'react-native-paper';
-import { IconSymbol } from '@/components/ui/IconSymbol';
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
-import React, { useEffect } from 'react';
-import axios from 'axios';
-import { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-type Task = {
-  id: string;
-  title: string;
-  completed: boolean;
-  createdAt: Date;
-  // updatedAt?: Date;         // Optional: Last update timestamp
-  // priority?: 'low' | 'medium' | 'high';  // Optional priority
-  // notes?: string;           // Optional notes
-};
-
-export default function HomeScreen() {
-
-  const [userInput, setUserInput] = useState('');
-  const [showIncomplete, setShowInComplete] = useState(true);
-  const [showCompleted, setShowCompleted] = useState(false);
-  const [tasks, setTasks] = useState([]);
-
-  const handleNewTask = async () => {
-    if (!userInput) return;
-    const newTask = { id: Date.now(), title: userInput, completed: false, createdAt: Date.now() };
-    const updatedTasks = [...tasks, newTask];
-    // console.log(newTask)
-
-    try {
-      await AsyncStorage.setItem('TASKS', JSON.stringify(updatedTasks));
-      setTasks(updatedTasks);
-      setUserInput('');
-    } catch (e) {
-      console.error('Error saving task:', e);
-    }
+const UserProfile = () => {
+  const user = {
+    name: 'John Doe',
+    username: '@johndoe',
+    email: 'john@example.com',
+    location: 'Bengaluru, India',
+    bio: 'Full Stack Dev | Productivity Nerd | Fitness Freak 🧠💪',
+    avatar: 'https://i.pravatar.cc/150?img=3',
+    stats: {
+      habits: 8,
+      streak: 23,
+      points: 1250,
+      level: 7,
+      rank: 'Elite 🔥',
+      xpProgress: 0.75, // 75% towards next level
+    },
   };
 
-  useEffect(() => {
-    const loadTasks = async () => {
-      try {
-        const data = await AsyncStorage.getItem('TASKS');
-        if (data) setTasks(JSON.parse(data));
-      } catch (e) {
-        console.error('Error loading tasks:', e);
-      }
-    };
-
-    loadTasks();
-  }, []);
-
-  const incompleteTasks = tasks?.filter((task:Task) => !task.completed);
-  const completedTasks = tasks?.filter((task:Task) => task.completed);
-
-
-  const toggleTask = async (taskId: string) => {
-    const updatedTasks = tasks?.map((task:Task) =>
-      task.id === taskId ? { ...task, completed: !task.completed } : task
-    );
-
-    try {
-      await AsyncStorage.setItem('TASKS', JSON.stringify(updatedTasks));
-      setTasks(updatedTasks);
-    } catch (e) {
-      console.error('Error updating task:', e);
-    }
+  const progressData = {
+    labels: ["Swim", "Bike", "Run"], // optional
+    data: [0.4, 0.6, 0.8]
   };
+
+  const chartConfig = {
+    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientTo: "#08130D",
+    backgroundGradientToOpacity: 0,
+    color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
+  };
+
+  const contributionData = Array(250).fill(0).map(_ => Math.floor(Math.random() * 50));
+
+  const heatMapColor: ColorProps = {
+    theme: 'white',
+    opacitys: [
+      {
+        opacity: 0.2,
+        limit: 5,
+      },
+      {
+        opacity: 0.4,
+        limit: 10,
+      },
+      {
+        opacity: 0.6,
+        limit: 15,
+      },
+      {
+        opacity: 0.8,
+        limit: 20,
+      },
+      {
+        opacity: 1,
+        limit: 25,
+      },
+    ],
+  }
 
   return (
-    <ImageBackground
-      source={require('../../assets/images/solo_level_bg.png')} // your image path
-      style={styles.background}
-      resizeMode="cover" // or 'contain', 'stretch'
-    >
-      <ThemedView style={styles.content}>
-        <View style={styles.titleContainer}>
-          <ThemedText type="title">Your Tasks!</ThemedText>
+    <View style={styles.maincontainer}>
+
+      <View style={styles.header}>
+        <Image source={{ uri: user.avatar }} style={styles.avatar} />
+        <View style={{ justifyContent: 'center' }}>
+          <Text style={styles.name}>{user.name}</Text>
+          <Text style={styles.username}>{user.username}</Text>
         </View>
-        <View style={styles.textInputContainer}>
-          <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter new task..." value={userInput} onChangeText={setUserInput} />
-          <Button style={styles.button} onPress={() => { handleNewTask(); Keyboard.dismiss(); }}><AntDesign name="plus" size={24} color="white" /></Button>
+      </View>
+
+      <ScrollView style={styles.container}>
+        {/* <LinearGradient
+          colors={['#0C0C0C', '#151D30']} // Your desired gradient colors
+          style={styles.linearGradientBackground}
+        > */}
+
+        {/* Stats Row */}
+        <View style={styles.statsContainer}>
+          <View style={styles.statBox}>
+            <Text style={styles.statValue}>{user.stats.habits}</Text>
+            <Text style={styles.statLabel}>Habits</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statValue}>{user.stats.streak}🔥</Text>
+            <Text style={styles.statLabel}>Streak</Text>
+          </View>
+          <View style={styles.statBox}>
+            <Text style={styles.statValue}>{user.stats.points}</Text>
+            <Text style={styles.statLabel}>XP Points</Text>
+          </View>
         </View>
 
+        {/* Gamified Stats */}
+        <View style={styles.gamifyContainer}>
+          <Text style={styles.levelText}>Level {user.stats.level} ⚔️</Text>
+          <ProgressBar progress={user.stats.xpProgress} color="#0183ff" style={styles.progressBar} />
+          <Text style={styles.rank}>Rank: {user.stats.rank}</Text>
+        </View>
 
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Incomplete Section */}
-          <View style={styles.categoryViewBox}>
-            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Incomplete Tasks</Text>
-            <Button onPress={() => setShowInComplete(!showIncomplete)}>
-              <AntDesign name={showIncomplete ? "up" : "down"} size={24} color="white" />
-            </Button>
+        <View style={styles.analyticsContainer}>
+          {/* <LinearGradient colors={['#0C0C0C', '#151D30']}> */}
+          <View style={[styles.analyticsBox, { borderColor: '#22c55e00', backgroundColor: '#22c55e99' }]}>
+            <Text style={styles.analyticsTitle}>Progress</Text>
+            <ProgressChart
+              data={progressData}
+              width={185}
+              height={140}
+              strokeWidth={10}
+              radius={32}
+              chartConfig={chartConfig}
+              hideLegend={true}
+              style={{ padding: 0 }}
+            />
           </View>
+          {/* </LinearGradient> */}
 
-          {showIncomplete && (
-            <View>
-              {incompleteTasks?.map((task:Task, index) => (
-                <View key={index} style={styles.taskCard}>
-                  <Checkbox onPress={() => toggleTask(task.id)} status="unchecked" color="#018bf4" />
-                  <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Completed Section */}
-          <View style={styles.categoryViewBox}>
-            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Completed Tasks</Text>
-            <Button onPress={() => setShowCompleted(!showCompleted)}>
-              <AntDesign name={showCompleted ? "up" : "down"} size={24} color="white" />
-            </Button>
+          <View style={[styles.analyticsBox, { borderColor: '#0183ff00', backgroundColor: '#0183ff99' }]}>
+            <Text style={styles.analyticsTitle}>Mood</Text>
+            <Octicons name="smiley" size={130} color="white" />
           </View>
+        </View>
+        {/* </LinearGradient> */}
 
-          {showCompleted && (
-            <View>
-              {completedTasks?.map((task:Task, index) => (
-                <View key={index} style={styles.taskCard}>
-                  <Checkbox onPress={() => toggleTask(task.id)} status="checked" color="#018bf4" />
-                  <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </ScrollView>
+        <View style={[styles.graphContainer]}>
+          <HeatMap data={contributionData} color={heatMapColor} shape='circle' />
+        </View>
 
-      </ThemedView>
-    </ImageBackground>
+        <View style={styles.lineChartContainer}>
+          <LineChart
+            data={{
+              // labels: ["January", "February", "March", "April", "May", "June"],
+              labels: [],
+              datasets: [
+                {
+                  data: [
+                    Math.random() * 100,
+                    Math.random() * 100,
+                    Math.random() * 100,
+                    Math.random() * 100,
+                  ]
+                }
+              ]
+            }}
+            withVerticalLabels={false}
+            withHorizontalLabels={false}
+            width={370} // from react-native
+            height={185}
+            yAxisLabel="$"
+            yAxisSuffix="k"
+            formatYLabel={(value) => `${value}k`}
+            chartConfig={{
+              backgroundColor: "#e26a00",
+              backgroundGradientFrom: "#fb8c00",
+              backgroundGradientTo: "#ffa726",
+              decimalPlaces: 2, // optional, defaults to 2dp
+              color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              labelColor: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+              style: {
+                borderRadius: 16,
+              },
+              propsForDots: {
+                r: "6",
+                strokeWidth: "2",
+                stroke: "#ffa726"
+              }
+            }}
+            bezier
+            style={{
+              borderRadius: 16,
+            }}
+          />
+        </View>
+      </ScrollView>
+    </View >
   );
-}
+};
+
 const styles = StyleSheet.create({
-  categoryViewBox: {
-    backgroundColor: '#272727',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 10,
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginVertical: 5
-  },
-  taskCard: {
-    display: 'flex',
-    flexDirection: 'row',
-    // justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#0008',
-    paddingHorizontal: 10,
-    paddingVertical: 10,
-    borderRadius: 10,
-    marginVertical: 3,
-    borderWidth: 1,
-    borderColor: '#018bf4',
-  },
-  promptBox: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#272727',
-    marginBottom: 8,
-  },
   background: {
     flex: 1,
     width: '100%',
     height: '100%',
   },
-  responseBox: {
-    padding: 16,
-    borderRadius: 12,
-    backgroundColor: '#00000050',
-    marginBottom: 8,
+  linearGradientBackground: {
+    flex: 1, // Make it take up the entire container
+    padding: 20,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
   },
-  macrosStatsData: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    gap: 2,
-  },
-  titleContainer: {
-    paddingTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: 8,
-  },
-  content: {
+  maincontainer: {
     flex: 1,
-    padding: 25,
-    paddingTop: 35,
+    backgroundColor: '#F8F8FF', //ghost white
+  },
+  container: {
+    backgroundColor: '#0C0C0C',
+    //backgroundColor: 'transparent',
+    //backgroundImage: 'linear-gradient(to bottom, #0C0C0C, #151D30)', //oil black to dark blue
+    flex: 1,
+    borderTopColor: '#0C0C0C',
+    borderTopWidth: 1,
+    overflowY: 'hidden',
+    padding: 20,
+    borderTopRightRadius: 20,
+    borderTopLeftRadius: 20,
+  },
+  header: {
+    alignItems: 'center',
+    flexDirection: 'row',
     gap: 15,
-    overflow: 'hidden',
-    height: '100%',
+    //marginBottom: 25,
+    //backgroundColor: '#018bf4',
+    padding: 20,
+    height: 200,
   },
-  dataViewer: {
-    flex: 1,
-    overflow: 'scroll',
+  avatar: {
+    width: 70,
+    height: 70,
+    borderRadius: 50,
+    marginBottom: 10,
   },
-  stepContainer: {
-    gap: 8,
+  name: {
+    color: '#0B1215',
+    fontSize: 32,
+    fontWeight: 900,
+  },
+  username: {
+    color: '#0B1215',
+    fontWeight: 600,
+    fontSize: 15,
+  },
+  gamifyContainer: {
+    //backgroundColor: '#0B1215',//obsidian
+    backgroundColor: '#F8F8FF',
+    borderRadius: 25,
+    padding: 15,
+    marginBottom: 20,
+  },
+  levelText: {
+    //color: '#00FFAA',
+    color: '#000',
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 8,
   },
-  foodsImage: {
-    height: 250,
-    width: '100%',
+  progressBar: {
+    height: 10,
+    borderRadius: 10,
+    backgroundColor: '#0B1215',
   },
-  textInput: {
-    width: '100%',
-    height: 50,
-    borderWidth: 1,
-    borderColor: '#018bf4',
-    borderTopRightRadius: 0,
-    borderBottomRightRadius: 0,
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    paddingHorizontal: 12,
+  rank: {
+    color: '#FFD700',
+    marginTop: 8,
+    fontWeight: '600',
+  },
+  analyticsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  analyticsBox: {
+    //backgroundColor: '#22c55e',
+    borderRadius: 25,
+    //padding: 5,
+    width: '47%',
+    height: 170,
+    borderWidth: 2,
+    alignItems: 'center',
+    //justifyContent: 'center',
+  },
+  analyticsTitle: {
     color: '#fff',
-    position: 'relative',
-    bottom: 0,
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 5,
   },
-  textInputContainer: {
-    position: 'relative',
-    bottom: 0,
+  graphContainer: {
+    backgroundColor: '#121212',
+    borderRadius: 25,
+    borderColor: '#fff',
+    borderWidth: 2,
+    padding: 15,
     width: '100%',
     display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 30,
-  },
-  button: {
-    width: 50,
-    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#018bf4',
-    borderTopRightRadius: 10,
-    borderBottomRightRadius: 10,
-    borderTopLeftRadius: 0,
-    borderBottomLeftRadius: 0,
+    //height: 200,
+    //borderColor: '#d9fe7d', 
+    //backgroundColor: '#d9fe7d50',
+    marginTop: 15,
   },
-  container: { flex: 1, padding: 16, backgroundColor: "white" },
-
-  // Header
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 },
-  headerText: { fontSize: 20, fontWeight: "bold" },
-  headerIcons: { flexDirection: "row" },
-
-  // Date Selector
-  dateSelector: { flexDirection: "row", marginBottom: 16 },
-  dateBox: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 10, marginRight: 8 },
-  dateBoxRed: { backgroundColor: "#F8D7DA" },
-  dateBoxGreen: { backgroundColor: "#D4EDDA" },
-  dateText: { fontSize: 14, fontWeight: "500" },
-
-  // Stats
-  statsContainer: { flexDirection: "row", justifyContent: "space-between", marginBottom: 15 },
-  statsBox: { flex: 1, backgroundColor: "#151d30", padding: 16, borderRadius: 12, marginRight: 8, borderColor: '#018bf4', borderWidth: 2, shadowColor: '#fff', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 10, elevation: 15 },
-  statsTitle: { fontSize: 16, fontWeight: "bold", marginTop: 4, color: 'white' },
-  statsData: { fontSize: 14, color: "#ffffff70" },
-  statsMain: { fontSize: 18, fontWeight: "bold", marginTop: 4, color: '#fff' },
-
-  // Water Section
-  waterSection: { backgroundColor: "#fff", padding: 12, borderRadius: 12, borderWidth: 1, borderColor: "#ddd", marginBottom: 16 },
-  waterTitle: { fontSize: 16, fontWeight: "bold" },
-  waterTracker: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 8 },
-  waterControl: { fontSize: 24, fontWeight: "bold", paddingHorizontal: 12 },
-  waterInfo: { alignItems: "center" },
-  waterAmount: { fontSize: 18, fontWeight: "bold" },
-  waterRemaining: { fontSize: 14, color: "gray" },
-
-  // Chat Input
-  chatInputContainer: { flexDirection: "row", alignItems: "center", padding: 10, borderRadius: 50, backgroundColor: "#F1F3F5", position: "absolute", bottom: 16, left: 16, right: 16 },
-  chatInput: { flex: 1, fontSize: 16, marginLeft: 10 },
+  lineChartContainer: {
+    // width: '47%',
+    // height: 170,
+    // borderWidth: 2,
+    // alignItems: 'center',
+    // justifyContent: 'space-between',
+    marginTop: 15,
+    marginBottom: 30,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginVertical: 15,
+  },
+  statBox: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statValue: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  statLabel: {
+    color: '#aaa',
+    fontSize: 14,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 'auto',
+  },
+  editBtn: {
+    backgroundColor: '#444',
+    padding: 12,
+    borderRadius: 8,
+  },
+  logoutBtn: {
+    backgroundColor: '#d33',
+    padding: 12,
+    borderRadius: 8,
+  },
+  btnText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
 });
+
+export default UserProfile;

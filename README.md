@@ -17,8 +17,9 @@
       - [ ] Mood vs. sleep/food correlation
       - [ ] Emoji or slider-based mood input
       - [ ] Did your win/lose (sleep, work, college...)
-   - [ ] AI-Powered Suggestions
+   - [ ] AI-Powered Suggestions (above Analytics screen)
       - [ ] Improve weak habits
+      - [ ] Send notification (quotes, reminders, etc.)
       - [ ] Suggest challenges based on recent progress
    - [ ] Quests & Challenges
       - [ ] Daily missions, weekly goals

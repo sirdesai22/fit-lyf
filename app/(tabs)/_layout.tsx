@@ -1,5 +1,5 @@
 import { Tabs } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 export default function TabLayout() {
   return (
@@ -8,22 +8,23 @@ export default function TabLayout() {
         tabBarIcon: ({ color, size }) => {
           let iconName: any;
 
-          if (route.name === 'index') iconName = 'book';
-          else if (route.name === 'mysquad') iconName = 'barbell';
+          if (route.name === 'journal') iconName = 'mood';
+          else if (route.name === 'mysquad') iconName = 'local-fire-department';
           else if (route.name === 'habitTracker') iconName = 'apps';
-          else if (route.name === 'profile') iconName = 'person';
+          else if (route.name === 'index') iconName = 'insights';
 
-          return <Ionicons name={iconName} size={size} color={color} />;
+          // return <Ionicons name={iconName} size={size} color={color} />;
+          return <MaterialIcons name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#018bf4',
         tabBarInactiveTintColor: 'gray',
         headerShown: false,
       })}
     >
-      <Tabs.Screen name="index" options={{ title: 'Journal' }} />
+      <Tabs.Screen name="index" options={{ title: 'Analytics' }} />
+      <Tabs.Screen name="journal" options={{ title: 'Journal' }} />
       <Tabs.Screen name="mysquad" options={{ title: 'My Squad' }} />
       <Tabs.Screen name="habitTracker" options={{ title: 'Habit Tracker' }} />
-      <Tabs.Screen name="profile" options={{ title: 'Profile' }} />
     </Tabs>
   );
 }

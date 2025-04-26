@@ -30,7 +30,7 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={DarkTheme}>
       <Slot /> {/* This renders the nested routes like (tabs)/_layout.tsx */}
-      <StatusBar style="auto" />
+      <StatusBar style="light" translucent={false} />
     </ThemeProvider>
   );
 }
