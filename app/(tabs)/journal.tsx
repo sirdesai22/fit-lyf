@@ -57,12 +57,12 @@ export default function HomeScreen() {
     loadTasks();
   }, []);
 
-  const incompleteTasks = tasks?.filter((task:Task) => !task.completed);
-  const completedTasks = tasks?.filter((task:Task) => task.completed);
+  const incompleteTasks = tasks?.filter((task: Task) => !task.completed);
+  const completedTasks = tasks?.filter((task: Task) => task.completed);
 
 
   const toggleTask = async (taskId: string) => {
-    const updatedTasks = tasks?.map((task:Task) =>
+    const updatedTasks = tasks?.map((task: Task) =>
       task.id === taskId ? { ...task, completed: !task.completed } : task
     );
 
@@ -75,72 +75,78 @@ export default function HomeScreen() {
   };
 
   return (
-    <ImageBackground
-      source={require('../../assets/images/solo_level_bg.png')} // your image path
-      style={styles.background}
-      resizeMode="cover" // or 'contain', 'stretch'
-    >
-      <ThemedView style={styles.content}>
-        <View style={styles.titleContainer}>
-          <ThemedText type="title">Your Tasks!</ThemedText>
+    <View style={styles.background}>
+      <View style={styles.navbar}>
+        <Text style={styles.branding}>Journal</Text>
+      </View>
+
+      <View>
+      </View>
+
+      <ScrollView
+        style={{ flex: 1, padding: 20 }}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Incomplete Section */}
+        <View style={styles.categoryViewBox}>
+          <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Incomplete Tasks</Text>
+          <Button onPress={() => setShowInComplete(!showIncomplete)}>
+            <AntDesign name={showIncomplete ? "up" : "down"} size={24} color="white" />
+          </Button>
         </View>
-        <View style={styles.textInputContainer}>
-          <TextInput style={styles.textInput} placeholderTextColor={'white'} placeholder="Enter new task..." value={userInput} onChangeText={setUserInput} />
-          <Button style={styles.button} onPress={() => { handleNewTask(); Keyboard.dismiss(); }}><AntDesign name="plus" size={24} color="white" /></Button>
+
+        {showIncomplete && (
+          <View>
+            {incompleteTasks?.map((task: Task, index) => (
+              <View key={index} style={styles.taskCard}>
+                <Checkbox onPress={() => toggleTask(task.id)} status="unchecked" color="#018bf4" />
+                <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
+              </View>
+            ))}
+          </View>
+        )}
+
+        {/* Completed Section */}
+        <View style={styles.categoryViewBox}>
+          <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Completed Tasks</Text>
+          <Button onPress={() => setShowCompleted(!showCompleted)}>
+            <AntDesign name={showCompleted ? "up" : "down"} size={24} color="white" />
+          </Button>
         </View>
 
-
-        <ScrollView
-          style={{ flex: 1 }}
-          contentContainerStyle={{ paddingBottom: 20 }}
-          keyboardShouldPersistTaps="handled"
-          keyboardDismissMode="on-drag"
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Incomplete Section */}
-          <View style={styles.categoryViewBox}>
-            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Incomplete Tasks</Text>
-            <Button onPress={() => setShowInComplete(!showIncomplete)}>
-              <AntDesign name={showIncomplete ? "up" : "down"} size={24} color="white" />
-            </Button>
+        {showCompleted && (
+          <View>
+            {completedTasks?.map((task: Task, index) => (
+              <View key={index} style={styles.taskCard}>
+                <Checkbox onPress={() => toggleTask(task.id)} status="checked" color="#018bf4" />
+                <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
+              </View>
+            ))}
           </View>
-
-          {showIncomplete && (
-            <View>
-              {incompleteTasks?.map((task:Task, index) => (
-                <View key={index} style={styles.taskCard}>
-                  <Checkbox onPress={() => toggleTask(task.id)} status="unchecked" color="#018bf4" />
-                  <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-
-          {/* Completed Section */}
-          <View style={styles.categoryViewBox}>
-            <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Completed Tasks</Text>
-            <Button onPress={() => setShowCompleted(!showCompleted)}>
-              <AntDesign name={showCompleted ? "up" : "down"} size={24} color="white" />
-            </Button>
-          </View>
-
-          {showCompleted && (
-            <View>
-              {completedTasks?.map((task:Task, index) => (
-                <View key={index} style={styles.taskCard}>
-                  <Checkbox onPress={() => toggleTask(task.id)} status="checked" color="#018bf4" />
-                  <Text style={{ fontSize: 18, fontWeight: '500', textAlign: 'left', color: 'white' }}>{task.title}</Text>
-                </View>
-              ))}
-            </View>
-          )}
-        </ScrollView>
-
-      </ThemedView>
-    </ImageBackground>
+        )}
+      </ScrollView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
+  navbar: {
+    backgroundColor: '#121212',
+    padding: 10,
+    borderBottomWidth: 2,
+    borderBottomColor: '#fff',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  branding: {
+    color: '#fff',
+    fontSize: 25,
+    fontWeight: '700',
+  },
   categoryViewBox: {
     backgroundColor: '#272727',
     paddingHorizontal: 20,
@@ -175,6 +181,7 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     height: '100%',
+    //padding: 20
   },
   responseBox: {
     padding: 16,

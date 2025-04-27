@@ -27,11 +27,12 @@ const UserProfile = () => {
 
   const progressData = {
     labels: ["Swim", "Bike", "Run"], // optional
+    colors: ["#ff0000", "#0000ff", "#ffff00"],
     data: [0.4, 0.6, 0.8]
   };
 
   const chartConfig = {
-    backgroundGradientFrom: "#1E2923",
+    backgroundGradientFrom: "#08130D00",
     backgroundGradientFromOpacity: 0,
     backgroundGradientTo: "#08130D",
     backgroundGradientToOpacity: 0,
@@ -110,7 +111,7 @@ const UserProfile = () => {
 
           <View style={styles.analyticsContainer}>
             {/* <LinearGradient colors={['#0C0C0C', '#151D30']}> */}
-            <View style={[styles.analyticsBox, { borderColor: '#22c55e00', backgroundColor: '#22c55e99' }]}>
+            <View style={[styles.analyticsBox, { borderColor: '#22c55e00', backgroundColor: '#22c55e75' }]}>
               <Text style={styles.analyticsTitle}>Progress</Text>
               <ProgressChart
                 data={progressData}

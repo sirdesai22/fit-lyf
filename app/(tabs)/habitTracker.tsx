@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     },
     navbar: {
         backgroundColor: '#121212',
-        padding: 16,
+        padding: 10,
         borderBottomWidth: 2,
         borderBottomColor: '#fff',
         display: 'flex',
