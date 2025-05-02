@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { Button, Checkbox } from 'react-native-paper';
 import { IconSymbol } from '@/components/ui/IconSymbol';
-import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { AntDesign, FontAwesome6, MaterialCommunityIcons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import axios from 'axios';
 import { useState } from 'react';
@@ -80,7 +80,37 @@ export default function HomeScreen() {
         <Text style={styles.branding}>Journal</Text>
       </View>
 
-      <View>
+      <View style={{ padding: 20 }}>
+        {/* should reset after 3 hours.. */}
+        <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>How is your mood?</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', gap: 10, padding: 10 }}>
+
+          <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
+            <Text style={{ color: '#fff', fontSize: 32, fontWeight: '600' }}>😂</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Happy</Text>
+          </View>
+
+          <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
+            <Text style={{ color: '#fff', fontSize: 32, fontWeight: '600' }}>😊</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Good</Text>
+          </View>
+
+          <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
+            <Text style={{ color: '#fff', fontSize: 32, fontWeight: '600' }}>😐</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Meh</Text>
+          </View>
+
+          <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
+            <Text style={{ color: '#fff', fontSize: 32, fontWeight: '600' }}>🙁</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Sad</Text>
+          </View>
+
+          <View style={{ flexDirection: 'column', alignItems: 'center', gap: 5, justifyContent: 'center' }}>
+            <Text style={{ color: '#fff', fontSize: 32, fontWeight: '600' }}>😭</Text>
+            <Text style={{ color: '#fff', fontSize: 12, fontWeight: '600' }}>Cry</Text>
+          </View>
+
+        </View>
       </View>
 
       <ScrollView
@@ -90,6 +120,11 @@ export default function HomeScreen() {
         keyboardDismissMode="on-drag"
         showsVerticalScrollIndicator={false}
       >
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
+          <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Your Tasks</Text>
+          <Text onPress={handleNewTask} style={{ color: '#000', backgroundColor: '#fff', paddingHorizontal: 10, borderRadius: 20, fontWeight: '600', paddingVertical: 2 }}>Add Task</Text>
+        </View>
+
         {/* Incomplete Section */}
         <View style={styles.categoryViewBox}>
           <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Incomplete Tasks</Text>

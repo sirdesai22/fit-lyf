@@ -18,7 +18,7 @@ const StreakCard = ({ username, profilePic, streak, rank, onPress }: {
       <Text style={styles.username}>{username}</Text>
       <View style={styles.statBadge}>
         <Text style={styles.rankText}>{rank} rank</Text>
-        <Text style={styles.fireText}>{streak}🔥</Text>
+        {/* <Text style={styles.fireText}>{streak}🔥</Text> */}
       </View>
     </Pressable>
   );
@@ -26,13 +26,13 @@ const StreakCard = ({ username, profilePic, streak, rank, onPress }: {
 
 const styles = StyleSheet.create({
   card: {
-    width: '47%',
+    width: '33.33%',
     aspectRatio: 1,
     // backgroundColor: '#111',
     borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 15,
+    //marginBottom: 15,
     // marginHorizontal: '1.5%',
     // shadowColor: '#018bf4',
     // shadowOffset: { width: 0, height: 0 },
@@ -42,8 +42,8 @@ const styles = StyleSheet.create({
     position: 'relative'
   },
   avatar: {
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     borderRadius: 100,
     marginBottom: 8,
     borderWidth: 2,
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     // elevation: 10,
   },
   username: {
-    color: '#fff',
+    color: '#000',
     fontWeight: 'bold',
     fontSize: 18,
   },
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   rankText: {
-    color: '#fff',
+    color: '#000',
     fontWeight: '700',
     fontSize: 15,
     // fontSize: 50,

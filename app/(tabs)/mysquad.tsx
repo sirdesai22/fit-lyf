@@ -2,32 +2,24 @@ import { StyleSheet, View, ScrollView, Text, ImageBackground } from 'react-nativ
 import { ThemedView } from '@/components/ThemedView';
 import StreakCard from '@/components/StreakCard';
 import { useRouter } from 'expo-router';
+import LeaderBoard from '@/components/LeaderBoard';
+import ParallaxScrollView from '@/components/ParallaxScrollView';
 
 
 const users = [
   { username: 'IronLifter', profilePic: 'https://i.pinimg.com/474x/45/6f/81/456f8111faafd1895ecc23c5bc9893c8.jpg', streak: 5, rank: 'S' },
-  { username: 'ZenRunner', profilePic: 'https://i.pinimg.com/474x/bf/c8/d0/bfc8d05b60bb87c8ed14c9ca446df73e.jpg', streak: 12, rank: 'E' },
-  { username: 'ProteinQueen', profilePic: 'https://i.pinimg.com/736x/32/05/ac/3205acd473cefd77300e85c0d2fe8f01.jpg', streak: 9, rank: 'D' },
-  { username: 'BeastMode', profilePic: 'https://i.pinimg.com/474x/09/2e/51/092e51754d2bc186fb6e1c5a33229d04.jpg', streak: 7, rank: 'A' },
-  { username: 'FitVibes', profilePic: 'https://i.pinimg.com/474x/bf/1c/bb/bf1cbb9a00723bfe5e0a13ba021e8902.jpg', streak: 11, rank: 'C' },
-  { username: 'SweatItOut', profilePic: 'https://i.pinimg.com/474x/6b/35/1b/6b351bd3e317c92896c9eeef119dd6e8.jpg', streak: 3, rank: 'B' },
+  { username: 'ZenRunner', profilePic: 'https://i.pinimg.com/474x/bf/c8/d0/bfc8d05b60bb87c8ed14c9ca446df73e.jpg', streak: 12, rank: 'A' },
+  { username: 'ProteinQueen', profilePic: 'https://i.pinimg.com/736x/32/05/ac/3205acd473cefd77300e85c0d2fe8f01.jpg', streak: 9, rank: 'B' },
 ];
 
 export default function Feed() {
   const router = useRouter();
 
   return (
-    <ImageBackground
-      source={require('../../assets/images/solo_level_bg.png')} // your image path
-      style={styles.background}
-      resizeMode="cover" // or 'contain', 'stretch'
-    >
-      <ThemedView style={{ height: '100%', padding: 20 }}>
-        <View style={{ width: '100%', height: 50, marginTop: 20 }}>
-          <Text style={{ textAlign: 'center', color: '#fff', fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>FitLyf</Text>
-        </View>
-
-        <ScrollView contentContainerStyle={styles.container}>
+    <ParallaxScrollView
+      headerImage={
+        <View style={styles.header}>
+          <Text style={{ fontSize: 20, fontWeight: '500', color: '#000', textAlign: 'center', marginVertical: 17 }}>Top 3 Squad Members</Text>
           <View style={styles.grid}>
             {users.map((user, index) => (
               <StreakCard
@@ -45,32 +37,71 @@ export default function Feed() {
               />
             ))}
           </View>
-        </ScrollView>
-
-      </ThemedView>
-
-    </ImageBackground>
+        </View>
+      }
+      headerBackgroundColor={{ dark: '#F8F8FF', light: '#F8F8FF' }}
+    >
+      <View style={styles.container}>
+        <LeaderBoard />
+      </View>
+    </ParallaxScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
     width: '100%',
     height: '100%',
   },
+  header: {
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   container: {
-    paddingBottom: 50,
+    backgroundColor: '#000',
+    flex: 1,
+    borderRadius: 10,
   },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    justifyContent: 'space-evenly',
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  learderboard: {
+    width: '100%',
+    backgroundColor: '#242424',
+    borderRadius: 10,
+    padding: 15,
+    marginTop: 10,
+    marginBottom: 10,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    gap: 10,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    zIndex: 1,
+    position: 'relative',
   },
+  userCard: {
+    width: '100%',
+    //backgroundColor: '#0183ff',
+    backgroundColor: '#242424',
+    borderWidth: 2,
+    borderColor: '#0183ff',
+    borderRadius: 10,
+    padding: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#0183ff',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  }
 });
