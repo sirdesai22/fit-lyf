@@ -1,12 +1,8 @@
 // App.js or your screen component
-import React from 'react';
-import { ImageBackground, ScrollView, StyleSheet, Text, View } from 'react-native';
-import HabitCard from '../../components/HabitCard';
-import { AntDesign, FontAwesome5, MaterialCommunityIcons } from '@expo/vector-icons';
-import { ThemedView } from '@/components/ThemedView';
+import { AntDesign } from '@expo/vector-icons';
 import HeatMap from '@ncuhomeclub/react-native-heatmap';
-import type { ColorProps } from '@ncuhomeclub/react-native-heatmap';
-import { Button } from 'react-native-paper';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 const opacitys = [
     {
