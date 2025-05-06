@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image } from "react-native";
+import { View, Text, StyleSheet, Image, ScrollView } from "react-native";
 
 export default function LeaderBoard() {
   const UserCardComponent = () => {
@@ -12,7 +12,7 @@ export default function LeaderBoard() {
             style={styles.avatar}
           />
           <View>
-            <Text style={styles.username}>1. John Doe</Text>
+            <Text style={styles.username}>Prathamesh Sirdesai</Text>
             <Text style={styles.stats}>S Rank - 134 days 🔥</Text>
           </View>
         </View>
@@ -23,12 +23,18 @@ export default function LeaderBoard() {
   return (
     <View style={{ height: "100%" }}>
       {/* <Text style={{ fontSize: 20, fontWeight: '500', color: '#fff', textAlign: 'center' }}>Top 5 Squad Members</Text> */}
-      <View style={styles.learderboard}>
+      <ScrollView style={styles.learderboard}>
         <UserCardComponent/>
         <UserCardComponent/>
         <UserCardComponent/>
         <UserCardComponent/>
-      </View>
+        <UserCardComponent/>
+        <UserCardComponent/>
+        <UserCardComponent/>
+        <UserCardComponent/>
+        <UserCardComponent/>
+        <UserCardComponent/>
+      </ScrollView>
     </View>
   );
 }
@@ -41,8 +47,8 @@ const styles = StyleSheet.create({
     padding: 15,
     marginTop: 10,
     marginBottom: 10,
-    alignItems: "center",
-    justifyContent: "center",
+    // alignItems: "center",
+    // justifyContent: "center",
     flexDirection: "column",
     gap: 10,
     overflow: "hidden",
@@ -58,6 +64,7 @@ const styles = StyleSheet.create({
     width: "100%",
     //backgroundColor: '#0183ff',
     backgroundColor: "#242424",
+    marginVertical: 5,
     // borderWidth: 2,
     // borderColor: '#0183ff',
     borderRadius: 7,

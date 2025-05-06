@@ -3,6 +3,7 @@ import { AntDesign } from '@expo/vector-icons';
 import HeatMap from '@ncuhomeclub/react-native-heatmap';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Button } from 'react-native-paper';
 
 const opacitys = [
     {
@@ -34,8 +35,11 @@ export default function App() {
             <View style={styles.navbar}>
                 <Text style={styles.branding}>Habit Tracker</Text>
             </View>
+            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
+            <Button style={{backgroundColor:'#fff', width:120}}><Text style={{color: '#000', fontSize: 15, fontWeight: 700}}>New Habit</Text> </Button>
+            </View>
 
-            <ScrollView style={{ padding: 20, }}>
+            <ScrollView style={{ padding: 20, paddingTop:0 }}>
                 <View style={[styles.habitContainer]}>
                     <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 7 }}>
                         <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500', }}>Book Reading</Text>

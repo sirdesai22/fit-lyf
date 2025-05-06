@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View, Keyboard, ImageBackground } from 'react-native';
+import { Image, StyleSheet, Platform, TextInput, Text, ScrollView, View, Keyboard, ImageBackground, Modal, Pressable, Alert } from 'react-native';
 
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
@@ -28,6 +28,7 @@ export default function HomeScreen() {
   const [showIncomplete, setShowInComplete] = useState(true);
   const [showCompleted, setShowCompleted] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleNewTask = async () => {
     if (!userInput) return;
@@ -121,8 +122,36 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 7 }}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#00000050' }}>
+            <View style={{ width: '90%', backgroundColor: '#121212', borderRadius: 20, padding: 20, alignItems: 'center', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.25, shadowRadius: 4, elevation: 5 }}>
+              <TextInput placeholder='Enter new task' style={{borderWidth:2, width: '100%', borderRadius: 10, borderColor: '#fff'}}></TextInput>
+              <View style={{ width: '100%', display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', gap: 10 }}>
+
+              <Pressable
+                style={{ marginTop: 10, padding: 10, backgroundColor: 'transparent', borderRadius: 10, borderWidth: 1, borderColor: '#fff' }}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={{color: '#fff'}}>Cancel</Text>
+              </Pressable>
+              <Pressable
+                style={{ marginTop: 10, padding: 10, backgroundColor: '#fff', borderRadius: 10 }}
+                onPress={() => setModalVisible(!modalVisible)}>
+                <Text style={{color:'#000'}}>Add Task</Text>
+              </Pressable>
+                  </View>
+            </View>
+          </View>
+        </Modal>
+
           <Text style={{ color: '#fff', fontSize: 17, fontWeight: '600' }}>Your Tasks</Text>
-          <Text onPress={handleNewTask} style={{ color: '#000', backgroundColor: '#fff', paddingHorizontal: 10, borderRadius: 20, fontWeight: '600', paddingVertical: 2 }}>Add Task</Text>
+          <Text onPress={()=>setModalVisible(true)} style={{ color: '#000', backgroundColor: '#fff', paddingHorizontal: 10, borderRadius: 20, fontWeight: '600', paddingVertical: 2 }}>Add Task</Text>
         </View>
 
         {/* Incomplete Section */}
