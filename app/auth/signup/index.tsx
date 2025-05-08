@@ -1,66 +1,185 @@
 import { supabase } from "@/lib/initSupabase";
-import { Redirect, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 import { useState } from "react";
-import { ImageBackground, StyleSheet, View } from "react-native";
-import { Button, Text, TextInput } from "react-native-paper";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { Button, Text, TextInput, HelperText } from "react-native-paper";
 
-export default function LoginScreen({ navigation }: any) {
+export default function SignupScreen() {
     const router = useRouter();
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+    const [nameError, setNameError] = useState<string | null>(null);
+    const [emailError, setEmailError] = useState<string | null>(null);
+    const [passwordError, setPasswordError] = useState<string | null>(null);
 
-    const handleLogin = async () => {
-        const { data, error } = await supabase.auth.signUp({ email, password });
-        if (!error) {
-            console.log('Signup successful', data);
-            router.replace('/(tabs)');
+    const validateEmail = (email: string) => {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    };
+
+    const validateForm = () => {
+        let isValid = true;
+        
+        if (!name) {
+            setNameError('Name is required');
+            isValid = false;
+        } else {
+            setNameError(null);
         }
-        else alert(error.message);
+
+        if (!email) {
+            setEmailError('Email is required');
+            isValid = false;
+        } else if (!validateEmail(email)) {
+            setEmailError('Please enter a valid email');
+            isValid = false;
+        } else {
+            setEmailError(null);
+        }
+
+        if (!password) {
+            setPasswordError('Password is required');
+            isValid = false;
+        } else if (password.length < 6) {
+            setPasswordError('Password must be at least 6 characters');
+            isValid = false;
+        } else {
+            setPasswordError(null);
+        }
+
+        return isValid;
+    };
+
+    const handleSignup = async () => {
+        if (!validateForm()) return;
+        
+        setLoading(true);
+        setError(null);
+
+        try {
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    data: {
+                        name: name,
+                    }
+                }
+            });
+
+            if (error) {
+                setError(error.message);
+            } else {
+                router.replace('/(tabs)');
+            }
+        } catch (err: any) {
+            setError(err.message || 'An unexpected error occurred');
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (
-        <ImageBackground
-            source={require('../../../assets/images/solo_level_bg.png')} // your image path
-            style={styles.background}
-            resizeMode="cover" // or 'contain', 'stretch'
-        >
-            <View style={styles.container}>
-                <Text style={styles.heading}>New Player</Text>
-                <TextInput placeholder="Name" placeholderTextColor="#ffffff66" style={styles.input} onChangeText={setName} />
-                <TextInput placeholder="Email" placeholderTextColor="#ffffff66" style={styles.input} onChangeText={setEmail} />
-                <TextInput placeholder="Password" placeholderTextColor="#ffffff66" secureTextEntry style={styles.input} onChangeText={setPassword} />
-                <Button onPress={handleLogin} style={styles.button}><Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>Sign In</Text></Button>
-                <Button onPress={() => router.replace('/auth/login')}><Text style={{ color: '#018bf4' }}>Already have an account?</Text></Button>
-            </View>
-        </ImageBackground>
+        <View style={styles.container}>
+            <Text style={styles.heading}>New Player</Text>
+            
+            <TextInput
+                placeholder="Name"
+                placeholderTextColor="#ffffff66"
+                textColor="#fff"
+                style={styles.input}
+                onChangeText={(text) => {
+                    setName(text);
+                    setNameError(null);
+                }}
+                error={!!nameError}
+                disabled={loading}
+            />
+            {nameError && <HelperText type="error">{nameError}</HelperText>}
+
+            <TextInput
+                placeholder="Email"
+                placeholderTextColor="#ffffff66"
+                textColor="#fff"
+                style={styles.input}
+                onChangeText={(text) => {
+                    setEmail(text);
+                    setEmailError(null);
+                }}
+                error={!!emailError}
+                disabled={loading}
+                autoCapitalize="none"
+                keyboardType="email-address"
+            />
+            {emailError && <HelperText type="error">{emailError}</HelperText>}
+
+            <TextInput
+                placeholder="Password"
+                placeholderTextColor="#ffffff66"
+                textColor="#fff"
+                secureTextEntry
+                style={styles.input}
+                onChangeText={(text) => {
+                    setPassword(text);
+                    setPasswordError(null);
+                }}
+                error={!!passwordError}
+                disabled={loading}
+            />
+            {passwordError && <HelperText type="error">{passwordError}</HelperText>}
+
+            {error && (
+                <Text style={styles.errorText}>{error}</Text>
+            )}
+
+            <Button 
+                onPress={handleSignup} 
+                style={styles.button}
+                disabled={loading}
+            >
+                {loading ? (
+                    <ActivityIndicator color="#000" />
+                ) : (
+                    <Text style={{ color: '#000', fontSize: 20, fontWeight: 'bold' }}>
+                        Sign Up
+                    </Text>
+                )}
+            </Button>
+
+            <Button 
+                onPress={() => router.replace('/auth/login')}
+                disabled={loading}
+            >
+                <Text style={{ color: '#018bf4' }}>
+                    Already have an account?
+                </Text>
+            </Button>
+        </View>
     );
-};
+}
 
 const styles = StyleSheet.create({
-    background: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
     container: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 20,
-        backgroundColor: '#000000d1'
+        backgroundColor: '#000000'
     },
     heading: {
         fontSize: 50,
         fontWeight: 'bold',
         marginBottom: 20,
-        color: '#018bf4',
+        color: '#fff',
     },
     input: {
         width: '100%',
         marginBottom: 10,
         backgroundColor: '#000000',
-        borderColor: '#018bf4',
+        borderColor: '#fff',
         borderWidth: 2,
         borderRadius: 15,
         paddingHorizontal: 12,
@@ -76,9 +195,14 @@ const styles = StyleSheet.create({
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#018bf4',
+        backgroundColor: '#fff',
         borderRadius: 8,
         paddingHorizontal: 12,
         marginBottom: 5,
+    },
+    errorText: {
+        color: '#ff4444',
+        marginBottom: 10,
+        textAlign: 'center',
     }
 });
