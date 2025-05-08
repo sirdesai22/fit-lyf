@@ -4,16 +4,17 @@ import { MaterialIcons, Feather, Octicons } from '@expo/vector-icons';
 import { Button, ProgressBar } from 'react-native-paper'; // or any other progress bar lib
 import LinearGradient from 'react-native-linear-gradient';
 import { ContributionGraph, LineChart, ProgressChart } from 'react-native-chart-kit';
-import HeatMap, { ColorProps } from '@ncuhomeclub/react-native-heatmap';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { supabase } from '@/lib/initSupabase';
 import { useRouter } from 'expo-router';
+import CustomHeatMap from '@/components/CustomHeatMap';
 
 const UserProfile = () => {
 
   const router = useRouter();
 
   const [user, setUser] = useState<any | null>(null); // Type 'any' can be refined based on your needs
+  const [habits, setHabits] = useState<any[]>([]);
   
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -32,6 +33,37 @@ const UserProfile = () => {
 
     fetchCurrentUser();
   },[]);
+
+  useEffect(() => {
+    const fetchHabits = async () => {
+      try {
+        const storedHabits = localStorage.getItem('habits');
+        if (storedHabits) {
+          setHabits(JSON.parse(storedHabits));
+        }
+      } catch (error) {
+        console.error('Error loading habits:', error);
+      }
+    };
+
+    fetchHabits();
+  }, []);
+
+  // Calculate total completions for each day across all habits
+  const calculateTotalCompletions = () => {
+    const totalCompletions = Array(31).fill(0);
+    
+    habits.forEach(habit => {
+      habit.completions.forEach((completion: number, index: number) => {
+        totalCompletions[index] += completion;
+      });
+    });
+
+    // Convert to binary array (1 if any habits completed, 0 if none)
+    return totalCompletions.map(count => count > 0 ? 1 : 0);
+  };
+
+  const contributionData = calculateTotalCompletions();
 
   const userStats = {
     name: 'John Doe',
@@ -63,34 +95,6 @@ const UserProfile = () => {
     backgroundGradientToOpacity: 0,
     color: (opacity = 1) => `rgba(26, 255, 146, ${opacity})`,
   };
-
-  const contributionData = Array(250).fill(0).map(_ => Math.floor(Math.random() * 50));
-
-  const heatMapColor: ColorProps = {
-    theme: 'white',
-    opacitys: [
-      {
-        opacity: 0.2,
-        limit: 5,
-      },
-      {
-        opacity: 0.4,
-        limit: 10,
-      },
-      {
-        opacity: 0.6,
-        limit: 15,
-      },
-      {
-        opacity: 0.8,
-        limit: 20,
-      },
-      {
-        opacity: 1,
-        limit: 25,
-      },
-    ],
-  }
 
   const handleLogout = async () => {
           const { error } = await supabase.auth.signOut();
@@ -170,7 +174,15 @@ const UserProfile = () => {
           {/* </LinearGradient> */}
 
           <View style={[styles.graphContainer]}>
-            <HeatMap data={contributionData} color={heatMapColor} shape='circle' />
+            <Text style={styles.graphTitle}>Habit Completion Summary</Text>
+            <CustomHeatMap 
+              completions={contributionData}
+              color="#018bf4"
+            />
+            <View style={styles.legendContainer}>
+              <Text style={styles.legendText}>No habits</Text>
+              <Text style={styles.legendText}>Habits completed</Text>
+            </View>
           </View>
 
           <View style={styles.lineChartContainer}>
@@ -351,13 +363,29 @@ const styles = StyleSheet.create({
     padding: 15,
     width: '100%',
     display: 'flex',
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-    //height: 200,
-    //borderColor: '#d9fe7d', 
-    //backgroundColor: '#d9fe7d50',
     marginTop: 15,
+  },
+  graphTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 10,
+  },
+  heatmap: {
+    marginVertical: 10,
+  },
+  legendContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: 10,
+  },
+  legendText: {
+    color: '#fff',
+    fontSize: 12,
   },
   lineChartContainer: {
     // width: '47%',
