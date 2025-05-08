@@ -1,25 +1,24 @@
 import { AntDesign } from '@expo/vector-icons';
-import HeatMap from '@ncuhomeclub/react-native-heatmap';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, Text, View, Modal, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, View, Modal, TouchableOpacity, Dimensions } from 'react-native';
 import { Button, TextInput, Portal } from 'react-native-paper';
 import ColorPicker from 'react-native-wheel-color-picker';
 
 const opacitys = [
     {
-        opacity: 0.2,
+        opacity: 0.3,
         limit: 5,
     },
     {
-        opacity: 0.4,
+        opacity: 0.5,
         limit: 10,
     },
     {
-        opacity: 0.6,
+        opacity: 0.7,
         limit: 15,
     },
     {
-        opacity: 0.8,
+        opacity: 0.85,
         limit: 20,
     },
     {
@@ -34,8 +33,51 @@ interface Habit {
     streak: number;
     frequency: string;
     color: string;
-    data: number[];
+    completions: number[]; // Array of 0s and 1s, index represents day-1
 }
+
+// Function to get today's date (0-30)
+const getTodayIndex = () => {
+    const today = new Date();
+    return today.getDate() - 1; // Convert to 0-based index
+};
+
+const CustomHeatMap = ({ completions, color }: { completions: number[], color: string }) => {
+    const todayIndex = getTodayIndex();
+    
+    return (
+        <View style={styles.heatmapContainer}>
+            <View style={styles.heatmapContent}>
+                <View style={styles.daysGrid}>
+                    {completions.map((completed, index) => {
+                        const isToday = index === todayIndex;
+                        
+                        return (
+                            <View 
+                                key={`cell-${index}`}
+                                style={[
+                                    styles.heatmapCell,
+                                    {
+                                        backgroundColor: completed === 1 ? color : 'rgba(255, 255, 255, 0.1)',
+                                        borderColor: isToday ? '#fff' : 'transparent',
+                                        borderWidth: isToday ? 2 : 0,
+            
+                                    }
+                                ]}
+                            >
+                                <Text style={[styles.dateLabel,{
+                                    color: completed === 1 ? '#000' : '#fff'
+                                }]}>
+                                    {index + 1}
+                                </Text>
+                            </View>
+                        );
+                    })}
+                </View>
+            </View>
+        </View>
+    );
+};
 
 export default function App() {
     const [habits, setHabits] = useState<Habit[]>([
@@ -45,7 +87,7 @@ export default function App() {
             streak: 0,
             frequency: 'daily',
             color: '#FF6B6B',
-            data: Array.from({ length: 250 }, () => Math.floor(Math.random() * 100))
+            completions: Array(31).fill(0)
         },
         {
             id: '2', 
@@ -53,7 +95,7 @@ export default function App() {
             streak: 0,
             frequency: 'daily',
             color: '#F8F8FF',
-            data: Array.from({ length: 250 }, () => Math.floor(Math.random() * 100))
+            completions: Array(31).fill(0)
         },
         {
             id: '3',
@@ -61,7 +103,7 @@ export default function App() {
             streak: 0,
             frequency: 'daily',
             color: '#e6fe4e',
-            data: Array.from({ length: 250 }, () => Math.floor(Math.random() * 100))
+            completions: Array(31).fill(0)
         }
     ]);
 
@@ -75,6 +117,40 @@ export default function App() {
     const [newHabitFrequency, setNewHabitFrequency] = useState('');
     const [newHabitColor, setNewHabitColor] = useState('#FF6B6B');
 
+    // Function to toggle habit completion for today
+    const toggleHabitCompletion = (habitId: string) => {
+        const todayIndex = getTodayIndex();
+        setHabits(prevHabits => 
+            prevHabits.map(habit => {
+                if (habit.id === habitId) {
+                    const newCompletions = [...habit.completions];
+                    newCompletions[todayIndex] = newCompletions[todayIndex] === 1 ? 0 : 1;
+                    
+                    // Calculate streak
+                    let streak = 0;
+                    if (newCompletions[todayIndex] === 1) {
+                        streak = 1;
+                        // Check previous days
+                        for (let i = todayIndex - 1; i >= 0; i--) {
+                            if (newCompletions[i] === 1) {
+                                streak++;
+                            } else {
+                                break;
+                            }
+                        }
+                    }
+
+                    return {
+                        ...habit,
+                        completions: newCompletions,
+                        streak
+                    };
+                }
+                return habit;
+            })
+        );
+    };
+
     const handleAddHabit = () => {
         if (!newHabitName || !newHabitFrequency) return;
 
@@ -84,7 +160,7 @@ export default function App() {
             streak: 0,
             frequency: newHabitFrequency,
             color: newHabitColor,
-            data: Array.from({ length: 250 }, () => Math.floor(Math.random() * 100))
+            completions: Array(31).fill(0)
         };
 
         setHabits([...habits, newHabit]);
@@ -133,23 +209,42 @@ export default function App() {
 
             <ScrollView style={{ padding: 20, paddingTop:0 }}>
                 {habits.map((habit) => (
-                    <TouchableOpacity 
-                        key={habit.id} 
-                        style={[styles.habitContainer]}
-                        onPress={() => {
-                            setSelectedHabit(habit);
-                            setEditHabitName(habit.name);
-                            setEditHabitFrequency(habit.frequency);
-                            setEditHabitColor(habit.color);
-                            setEditModalVisible(true);
-                        }}
-                    >
-                        <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 7 }}>
+                    <View key={habit.id} style={[styles.habitContainer]}>
+                        <View style={styles.habitHeader}>
                             <Text style={{ color: '#fff', fontSize: 15, fontWeight: '500' }}>{habit.name}</Text>
-                            <AntDesign name="checkcircle" size={24} color={habit.color} />
+                            <View style={styles.habitActions}>
+                                <TouchableOpacity 
+                                    onPress={() => {
+                                        setSelectedHabit(habit);
+                                        setEditHabitName(habit.name);
+                                        setEditHabitFrequency(habit.frequency);
+                                        setEditHabitColor(habit.color);
+                                        setEditModalVisible(true);
+                                    }}
+                                    style={styles.editButton}
+                                >
+                                    <AntDesign name="edit" size={20} color="#fff" />
+                                </TouchableOpacity>
+                                <TouchableOpacity 
+                                    onPress={() => toggleHabitCompletion(habit.id)}
+                                    style={styles.completeButton}
+                                >
+                                    <AntDesign 
+                                        name={habit.completions[getTodayIndex()] === 1 ? "checkcircle" : "checkcircleo"} 
+                                        size={24} 
+                                        color={habit.color} 
+                                    />
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                        <HeatMap data={habit.data} color={{ theme: habit.color, opacitys: opacitys }} shape='circle' />
-                    </TouchableOpacity>
+                        <View style={styles.streakContainer}>
+                            <Text style={{ color: '#fff', fontSize: 12 }}>Current Streak: {habit.streak} days</Text>
+                        </View>
+                        <CustomHeatMap 
+                            completions={habit.completions}
+                            color={habit.color}
+                        />
+                    </View>
                 ))}
             </ScrollView>
 
@@ -441,5 +536,55 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         marginTop: 20,
+    },
+    streakContainer: {
+        width: '100%',
+        paddingHorizontal: 7,
+        marginBottom: 10,
+    },
+    heatmapContainer: {
+        width: '100%',
+        marginTop: 10,
+    },
+    heatmapContent: {
+        width: '100%',
+    },
+    daysGrid: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'flex-start',
+        paddingHorizontal: 10,
+    },
+    heatmapCell: {
+        borderRadius: 4,
+        margin: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 20,
+        height: 20,
+    },
+    dateLabel: {
+        color: '#fff',
+        fontSize: 10,
+    },
+    habitHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: '100%',
+        padding: 7,
+    },
+    habitActions: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
+    editButton: {
+        padding: 5,
+    },
+    completeButton: {
+        padding: 5,
     },
 });
