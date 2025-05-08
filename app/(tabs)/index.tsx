@@ -1,14 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ImageBackground, Dimensions, ScrollView } from 'react-native';
 import { MaterialIcons, Feather, Octicons } from '@expo/vector-icons';
-import { ProgressBar } from 'react-native-paper'; // or any other progress bar lib
+import { Button, ProgressBar } from 'react-native-paper'; // or any other progress bar lib
 import LinearGradient from 'react-native-linear-gradient';
 import { ContributionGraph, LineChart, ProgressChart } from 'react-native-chart-kit';
 import HeatMap, { ColorProps } from '@ncuhomeclub/react-native-heatmap';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { supabase } from '@/lib/initSupabase';
+import { useRouter } from 'expo-router';
 
 const UserProfile = () => {
-  const user = {
+
+  const router = useRouter();
+
+  const [user, setUser] = useState<any | null>(null); // Type 'any' can be refined based on your needs
+  
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      try {
+        const { data: { user: currentUser }, error: authError } = await supabase.auth.getUser();
+
+        if (authError) {
+          console.error('Error getting current user:', authError);
+        } else {
+          setUser(currentUser);
+        }
+      } catch (err: any) {
+        console.error('An unexpected error occurred:', err);
+      } 
+    };
+
+    fetchCurrentUser();
+  },[]);
+
+  const userStats = {
     name: 'John Doe',
     username: '@johndoe',
     email: 'john@example.com',
@@ -67,14 +92,25 @@ const UserProfile = () => {
     ],
   }
 
+  const handleLogout = async () => {
+          const { error } = await supabase.auth.signOut();
+          if (!error) {
+              //call backend route to add user data
+              // const response = await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/api/user/add`, { email });
+              // console.log('Login successful', data);
+              router.replace('/auth/login');
+          }
+          else alert(error.message);
+      };
+
   return (
     <ParallaxScrollView
       headerImage={
         <View style={styles.header}>
-          <Image source={{ uri: user.avatar }} style={styles.avatar} />
+          <Image source={{ uri: userStats.avatar }} style={styles.avatar} />
           <View style={{ justifyContent: 'center' }}>
-            <Text style={styles.name}>{user.name}</Text>
-            <Text style={styles.username}>{user.username}</Text>
+            <Text style={styles.name}>{user?.name? user.name : "Dummy"}</Text>
+            <Text style={styles.username}>{user?.email}</Text>
           </View>
         </View>
       }
@@ -87,15 +123,15 @@ const UserProfile = () => {
           {/* Stats Row */}
           <View style={styles.statsContainer}>
             <View style={styles.statBox}>
-              <Text style={styles.statValue}>{user.stats.habits}</Text>
+              <Text style={styles.statValue}>{userStats.stats.habits}</Text>
               <Text style={styles.statLabel}>Habits</Text>
             </View>
             <View style={styles.statBox}>
-              <Text style={styles.statValue}>{user.stats.streak}🔥</Text>
+              <Text style={styles.statValue}>{userStats.stats.streak}🔥</Text>
               <Text style={styles.statLabel}>Streak</Text>
             </View>
             <View style={styles.statBox}>
-              <Text style={styles.statValue}>{user.stats.points}</Text>
+              <Text style={styles.statValue}>{userStats.stats.points}</Text>
               <Text style={styles.statLabel}>XP Points</Text>
             </View>
           </View>
@@ -104,9 +140,9 @@ const UserProfile = () => {
 
           {/* Gamified Stats */}
           <View style={styles.gamifyContainer}>
-            <Text style={styles.levelText}>Level {user.stats.level} ⚔️</Text>
-            <ProgressBar progress={user.stats.xpProgress} color="#0183ff" style={styles.progressBar} />
-            <Text style={styles.rank}>Rank: {user.stats.rank}</Text>
+            <Text style={styles.levelText}>Level {userStats.stats.level} ⚔️</Text>
+            <ProgressBar progress={userStats.stats.xpProgress} color="#0183ff" style={styles.progressBar} />
+            <Text style={styles.rank}>Rank: {userStats.stats.rank}</Text>
           </View>
 
           <View style={styles.analyticsContainer}>
@@ -184,6 +220,10 @@ const UserProfile = () => {
           </View>
         </ScrollView>
       </View >
+      <View style={{ flexDirection: 'row', justifyContent: 'space-around', paddingHorizontal: 20, marginBottom: 20 }}>
+        <Button style={{backgroundColor: '#0183ff', width:'45%'}}><Text style={{color:'#fff', fontSize:20, fontWeight:700}}>Edit Profile</Text></Button>
+        <Button onPress={handleLogout} style={{backgroundColor: '#f56565', width:'45%'}}><Text style={{color:'#fff', fontSize:20, fontWeight:700}}>Logout</Text></Button>
+      </View>
     </ParallaxScrollView>
   );
 };
