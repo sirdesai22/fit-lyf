@@ -60,10 +60,10 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
-      <ThemeProvider value={DarkTheme}>
-        <Slot /> {/* This renders the nested routes like (tabs)/_layout.tsx */}
-        <StatusBar style="light" translucent={false} />
-      </ThemeProvider>
+    <ThemeProvider value={DarkTheme}>
+      <Slot /> {/* This renders the nested routes like (tabs)/_layout.tsx */}
+      <StatusBar style="light" translucent={false} />
+    </ThemeProvider>
     </PaperProvider>
   );
 }

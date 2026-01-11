@@ -64,8 +64,8 @@ export default function LoginScreen() {
             if (error) {
                 setError(error.message);
             } else {
-                router.replace('/(tabs)');
-            }
+            router.replace('/(tabs)');
+        }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred');
         } finally {
@@ -116,8 +116,8 @@ export default function LoginScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.heading}>Login</Text>
+            <View style={styles.container}>
+                <Text style={styles.heading}>Login</Text>
             
             <TextInput
                 placeholder="Email"
@@ -192,7 +192,7 @@ export default function LoginScreen() {
                     Don't have an account?
                 </Text>
             </Button>
-        </View>
+            </View>
     );
 }
 

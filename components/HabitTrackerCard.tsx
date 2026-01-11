@@ -111,7 +111,7 @@ export default function HabitTrackerCard({ habits, onHabitsChange }: HabitTracke
     };
 
     return (
-        <View>
+        <View style={{paddingHorizontal: 15}}>
             <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center', padding: 10 }}>
                 <Button 
                     style={{backgroundColor:'#fff', width:120}}

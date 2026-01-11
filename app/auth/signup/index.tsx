@@ -73,7 +73,7 @@ export default function SignupScreen() {
             if (error) {
                 setError(error.message);
             } else {
-                router.replace('/(tabs)');
+            router.replace('/(tabs)');
             }
         } catch (err: any) {
             setError(err.message || 'An unexpected error occurred');
@@ -83,8 +83,8 @@ export default function SignupScreen() {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.heading}>New Player</Text>
+            <View style={styles.container}>
+                <Text style={styles.heading}>New Player</Text>
             
             <TextInput
                 placeholder="Name"
@@ -157,7 +157,7 @@ export default function SignupScreen() {
                     Already have an account?
                 </Text>
             </Button>
-        </View>
+            </View>
     );
 }
 

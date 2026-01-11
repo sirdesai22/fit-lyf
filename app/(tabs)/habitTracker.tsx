@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import HabitTrackerCard from '@/components/HabitTrackerCard';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Habit {
     id: string;
@@ -26,7 +27,7 @@ export default function HabitTrackerScreen() {
 
     const loadHabits = async () => {
         try {
-            const storedHabits = localStorage.getItem('habits');
+            const storedHabits = await AsyncStorage.getItem('habits');
             if (storedHabits) {
                 setHabits(JSON.parse(storedHabits));
             }
@@ -37,7 +38,7 @@ export default function HabitTrackerScreen() {
 
     const saveHabits = async () => {
         try {
-            localStorage.setItem('habits', JSON.stringify(habits));
+            await AsyncStorage.setItem('habits', JSON.stringify(habits));
         } catch (error) {
             console.error('Error saving habits:', error);
         }
@@ -52,7 +53,7 @@ export default function HabitTrackerScreen() {
                 habits={habits}
                 onHabitsChange={setHabits}
             />
-        </ScrollView>
+            </ScrollView>
     );
 }
 

@@ -8,6 +8,7 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { supabase } from '@/lib/initSupabase';
 import { useRouter } from 'expo-router';
 import CustomHeatMap from '@/components/CustomHeatMap';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserProfile = () => {
 
@@ -35,9 +36,9 @@ const UserProfile = () => {
   },[]);
 
   useEffect(() => {
-    const fetchHabits = async () => {
+    const loadHabits = async () => {
       try {
-        const storedHabits = localStorage.getItem('habits');
+        const storedHabits = await AsyncStorage.getItem('habits');
         if (storedHabits) {
           setHabits(JSON.parse(storedHabits));
         }
@@ -46,7 +47,7 @@ const UserProfile = () => {
       }
     };
 
-    fetchHabits();
+    loadHabits();
   }, []);
 
   // Calculate total completions for each day across all habits
